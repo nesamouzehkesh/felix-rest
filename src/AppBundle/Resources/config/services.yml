@@ -1,0 +1,15 @@
+services:    
+    nesa.twig.function.extension:
+        class: AppBundle\Library\Twig\TwigFunctionExtension
+        arguments: 
+            - "@translator.default"
+        tags:
+            - { name: twig.extension }    
+        
+             
+    nesa.twig.filter.extension:
+        class: AppBundle\Library\Twig\TwigFilterExtension
+        arguments: 
+            - "@translator.default"
+        tags:
+            - { name: twig.extension }

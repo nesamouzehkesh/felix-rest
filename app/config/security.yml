@@ -1,0 +1,49 @@
+# To get started with security, check out the documentation:
+# http://symfony.com/doc/current/book/security.html
+security:
+
+    # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
+    encoders:
+        UserBundle\Entity\User:
+            id: nesa.md5encoder
+    
+    role_hierarchy:
+        ROLE_ADMIN:       ROLE_USER
+        ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+    
+    providers:
+        administrators:
+            entity: { class: UserBundle:User }
+
+    firewalls:
+        secured_area:
+            pattern:   ^/admin
+            anonymous: ~
+            provider: administrators
+            form_login:
+                login_path: nesa_login
+                check_path: nesa_login_check
+            logout:
+                path:   nesa_logout
+                target: nesa_login
+                
+        secured_area_web:
+            #pattern:   ^/shopping|/media|/
+            pattern:   ^/shopping|/
+            anonymous: ~
+            provider: administrators
+            form_login:
+                login_path: nesa_login_web
+                check_path: nesa_login_check_web
+            logout:
+                path:   nesa_logout_web
+                target: nesa_login_web
+                
+    access_control:
+        #- { path: ^/admin/, roles: ROLE_ADMIN, requires_channel: https } 
+        - { path: ^/admin/, roles: ROLE_ADMIN }
+        # Include the following line to also secure the /admin path itself
+        - { path: ^/admin$, roles: ROLE_ADMIN }
+        #- { path: ^/shopping/, roles: ROLE_USER, requires_channel: https } 
+        - { path: ^/shopping/, roles: ROLE_USER }
+      

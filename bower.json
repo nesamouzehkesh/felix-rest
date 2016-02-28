@@ -1,0 +1,21 @@
+{
+  "name": "felix",
+  "homepage": "",
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "web/assets/vendor/",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.6",
+    "jquery-ui": "^1.11.4",
+    "eonasdan-bootstrap-datetimepicker": "^4.17.37"
+  }
+}

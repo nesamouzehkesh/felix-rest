@@ -1,0 +1,38 @@
+cms:
+    resource: "@CmsBundle/Controller/"
+    type:     annotation
+    prefix:   /admin/cms
+
+user:
+    resource: "@UserBundle/Controller/"
+    type:     annotation
+    prefix:   /admin/user
+    
+product:
+    resource: "@ProductBundle/Controller/"
+    type:     annotation
+    prefix:   /admin/product
+
+app:
+    resource: "@AppBundle/Controller/"
+    type:     annotation
+    prefix:   /admin/app
+
+
+# Route configs related to admin login page
+nesa_login:
+    path:     /login/{isWeb}
+    defaults: { _controller: AppBundle:Security:login, isWeb: false }
+nesa_login_check:
+    path: /admin/login_check
+nesa_logout:
+    path: /admin/logout
+
+# Route configs related to customers login page
+nesa_login_web:
+    path:     /shopp/login/{isWeb}
+    defaults: { _controller: AppBundle:Security:login, isWeb: true }
+nesa_login_check_web:
+    path: /shopping/login_check
+nesa_logout_web:
+    path: /shopping/logout

@@ -1,0 +1,60 @@
+{% form_theme form '::twig/formRow.html.twig' %}
+
+{% if noFormInfo is not defined %}
+    {% set formName = form.vars.full_name %}
+    {% set forTitle = 'form.' ~ formName ~ '.title' %}
+    {% set forLogo = 'form.' ~ formName ~ '.icon' %}
+    {% set forDescription = 'form.' ~ formName ~ '.description' %}
+{% endif %}
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span>
+                <span class="sr-only">{{ 'action.close'|trans }}</span>
+            </button>
+            {% if forTitle is defined %}
+                <h4 class="modal-title" id="myModalLabel">
+                    {% if forLogo is defined %}
+                        {{ forLogo|icon }}
+                    {% endif %}
+                    {{ forTitle|trans }}
+                </h4>
+            {% endif %}
+        </div>
+        
+        {{ form_start(form) }}
+            <div class="modal-body">
+                {% if forDescription is defined %}
+                    {{ forDescription|trans }}<br><br>
+                {% endif %}
+                <div class="form-message"></div>
+                {% block body %}{% endblock %}
+            </div>
+
+            <div class="modal-footer">
+                <button id="form-submit-{{ form.vars.name }}" class="btn btn-primary ladda-button" type="submit" data-style="expand-left"><span class="ladda-label">{{ 'action.save'|trans }}</span></button>            
+                <button class="btn btn-primary" type="button" data-dismiss="modal"><span class="ladda-label">{{ 'action.close'|trans }}</span></button>
+            </div>
+        {{ form_end(form) }}
+        
+    </div>
+</div>
+
+{% block formScript %}{% endblock %}
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.form-control-select2').select2();
+        
+        $('#form-submit-{{ form.vars.name }}').click(function(e){
+            var form = $(this).closest('form');
+            if (form.isValid()) {
+                var ladda = Ladda.create(this);
+                ladda.start();
+            }
+	});        
+    });
+</script>
