@@ -1,5 +1,4 @@
 services:
-    saman.user_user:
+    app.user.service:
         class: UserBundle\Service\UserService
-        arguments: 
-            - "@nesa.appService"
+        arguments: ["@app.service"]

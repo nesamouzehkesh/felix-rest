@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use AppBundle\Library\Base\BaseController;
 
 class DashboardControllerController extends BaseController
 {
@@ -14,7 +15,7 @@ class DashboardControllerController extends BaseController
         /* echo $this->get('nesa.PrintService')->printText("This text is "); */
                
         return $this->render(
-            'AppBundle:DashboardController:displayDashboard.html.twig',
+            '::admin/app/dashboard.html.twig',
             array()
         );
     }
@@ -24,11 +25,11 @@ class DashboardControllerController extends BaseController
      */    
     public function MailerAction()
     {
-        echo $this->get('nesa.MailerService')->getMail("D620");
+        echo $this->get('app.mailer.service')->getMail("D620");
         $this->get('nesa.MailerService')->sendMail("nesa M", "Hello");
             
         return $this->render(
-            'AppBundle:DashboardController:displayDashboard.html.twig', 
+            '::admin/app/dashboard.html.twig',
             array()
             );
     }
@@ -38,12 +39,12 @@ class DashboardControllerController extends BaseController
      */
     public function LoggerAction()
     {
-        echo $this->get('nesa.LoggerService')->logEvent("Critical", "Pending");
-        $this->get('nesa.LoggerService')->getEvent("11278");
-        $this->get('nesa.LoggerService')->showAllEvents("Critical");
+        echo $this->get('app.logger.service')->logEvent("Critical", "Pending");
+        $this->get('app.logger.service')->getEvent("11278");
+        $this->get('app.logger.service')->showAllEvents("Critical");
             
         return $this->render(
-            'AppBundle:DashboardController:displayDashboard.html.twig', 
+            '::admin/app/dashboard.html.twig',
             array()
             );
     }

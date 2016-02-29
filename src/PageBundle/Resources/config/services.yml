@@ -1,0 +1,4 @@
+services:
+    app.page.service:
+        class: PageBundle\Service\PageService
+        arguments: ["@app.service"]

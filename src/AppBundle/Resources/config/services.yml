@@ -1,15 +1,85 @@
 services:    
-    nesa.twig.function.extension:
+    app.service:
+        class: AppBundle\Service\AppService
+        public: false
+        arguments: 
+            - "@translator.default"
+            - "@security.token_storage"
+            - "@doctrine.orm.default_entity_manager"
+            - "@request_stack"
+            - "@knp_paginator"
+            - "@validator"
+            - "@app.session.service"
+            - "%app_service_params%"
+            
+    app.twig.function.service:
         class: AppBundle\Library\Twig\TwigFunctionExtension
         arguments: 
             - "@translator.default"
         tags:
             - { name: twig.extension }    
-        
              
-    nesa.twig.filter.extension:
+    app.twig.filter.service:
         class: AppBundle\Library\Twig\TwigFilterExtension
         arguments: 
             - "@translator.default"
         tags:
             - { name: twig.extension }
+            
+    app.md5encoder.service:
+        class: AppBundle\Service\Md5Encoder
+        arguments: 
+            - "%app_saltmain%"
+        
+    app.session.service:
+        class: AppBundle\Service\Session
+        arguments: ~
+        
+    app.dataFixture.service:
+        class: AppBundle\Service\DataFixture
+        arguments:
+            - "@app.service"
+
+    app.user.service:
+        class: UserBundle\Service\UserService
+        arguments: 
+            - "@app.service"
+    
+    
+    app.print.service:
+        class: AppBundle\Service\PrintService
+        arguments: 
+            - "@app.printer.hp.service"
+            - "@app.printer.brother.service"
+            - "%app_printerType%"
+    app.printer.hp.service:
+        class: AppBundle\Service\Printer\HpPrinterService
+    app.printer.brother.service:
+        class: AppBundle\Service\Printer\BrotherPrinterService 
+        
+        
+    app.mailer.service:
+        class: AppBundle\Service\MailerService
+        arguments: 
+            - "@app.mailer.gmail.service"
+            - "@app.mailer.outlook.service"
+            - "%app_mailerType%"
+    app.mailer.gmail.service:
+        class: AppBundle\Service\Mailer\GmailMailerService
+    app.mailer.outlook.service:
+        class: AppBundle\Service\Mailer\OutlookMailerService 
+        
+        
+    app.logger.service:
+        class: AppBundle\Service\LoggerService
+        arguments: 
+            - "@app.logger.sms.service"
+            - "@app.logger.file.service"
+            - "@app.logger.email.service"
+            - "%app_loggerType%"
+    app.logger.sms.service:
+        class: AppBundle\Service\Logger\SMSLoggerService
+    app.logger.file.service:
+        class: AppBundle\Service\Logger\FileLoggerService 
+    app.logger.email.service:
+        class: AppBundle\Service\Logger\EmailLoggerService             

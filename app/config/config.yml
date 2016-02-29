@@ -1,20 +1,21 @@
 imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
-    - { resource: services.yml }
     - { resource: "@AppBundle/Resources/config/services.yml" }
-    - { resource: "@ProductBundle/Resources/config/services.yml" }
-    - { resource: "@CmsBundle/Resources/config/services.yml" }
+    - { resource: "@PageBundle/Resources/config/services.yml" }
     
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: en
-    nesa.saltmain: ""
-    printerType: "Brother"
-    mailerType: "Gmail"
-    loggerType: "SMSLogger"
+    app_saltmain: ""
+    app_printerType: "Brother"
+    app_mailerType: "Gmail"
+    app_loggerType: "SMSLogger"    
+    app_paginateLimit: 10
     
+    app_service_params:
+        paginateLimit: %app_paginateLimit%
     
 # Symfony framework main configurations
 framework:
@@ -50,7 +51,14 @@ framework:
 twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
-
+    globals:
+        twig:
+            app:
+                modules:
+                    page: 
+                        route: page_admin_index
+                    user: 
+                        route: user_admin_index
 
 # Doctrine configurations
 # Its prize projects are an object-relational mapper (ORM) and the database 

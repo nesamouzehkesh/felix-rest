@@ -7,7 +7,7 @@ use \Twig_Extension;
 
 /**
  *
- * @author nesa mouzehkesh
+ * @author Saman Shafigh - samanshafigh@gmail.com
  */
 class TwigFunctionExtension extends Twig_Extension
 {
@@ -26,18 +26,6 @@ class TwigFunctionExtension extends Twig_Extension
     protected $translator;
     
     /**
-     *
-     * @var Twig_Environment $environment
-     */
-    protected $environment;
-    
-    /**
-     *
-     * @var type 
-     */
-    protected $javascripts = array();
-
-    /**
      * Resolve dependencies
      * 
      * @param Translator $translator
@@ -46,15 +34,6 @@ class TwigFunctionExtension extends Twig_Extension
     {
         $this->translator = $translator;
     }  
-    
-    /**
-     * 
-     * @param \Twig_Environment $environment
-     */
-    public function initRuntime(\Twig_Environment $environment)
-    {
-        $this->environment = $environment;
-    }
     
     /**
      * 
@@ -80,7 +59,7 @@ class TwigFunctionExtension extends Twig_Extension
                 ),
             );
     }
-    
+
     /**
      * 
      * @param type $navigations
@@ -108,7 +87,6 @@ class TwigFunctionExtension extends Twig_Extension
         }
         
         $breadcrumbItemsContent = '';
-        
         foreach ($navigations as $key => $navigation) {
             $defaultNavigationParameters = array(
                 'class' => '',
@@ -179,19 +157,21 @@ class TwigFunctionExtension extends Twig_Extension
      * 
      * @param type $url
      * @param type $text
-     * @param type $parameters
+     * @param type $clientParameters
      * @return type
      */
-    public function link($text, $parameters = array())
+    public function link($text, $clientParameters = array())
     {
-        $defaultParameters = array(
-            'url' => null,
-            'icon' => null,
-            'size' => 'xs', // lg , no , sm, xs
-            'class' => '',
-            'attr' => null
-        );
-        $parameters = array_merge($defaultParameters, $parameters);
+        $parameters = array_merge(
+            array(
+                'url' => null,
+                'icon' => null,
+                'size' => 'xs', // lg , no , sm, xs
+                'class' => '',
+                'attr' => null
+                ), 
+            $clientParameters
+            );
         
         $sizeContent = 'btn-' . $parameters['size'];
         if ('no' === $parameters['size']) {
@@ -235,18 +215,20 @@ class TwigFunctionExtension extends Twig_Extension
      */
     public function button($text, $clientParameters = array())
     {
-        $defaultParameters = array(
-            'url' => null,
-            'icon' => null,
-            'size' => null, //('xs', 'sm', 'lg')
-            'toggleModal' => null,
-            'action' => '',
-            'class' => '',
-            'type' => 'link',
-            'id' => null,
-            'attr' => null
-        );
-        $parameters = array_merge($defaultParameters, $clientParameters);
+        $parameters = array_merge(
+            array(
+                'url' => null,
+                'icon' => null,
+                'size' => null, //('xs', 'sm', 'lg')
+                'toggleModal' => null,
+                'action' => '',
+                'class' => '',
+                'type' => 'link',
+                'id' => null,
+                'attr' => null
+                ), 
+            $clientParameters
+            );
         
         $urlContent = '';
         if (null !== $parameters['url']) {
@@ -305,13 +287,13 @@ class TwigFunctionExtension extends Twig_Extension
             $this->translator->trans($text)
             );
     }
-    
+
     /**
      * 
      * @return string
      */
     public function getName()
     {
-        return 'twig_function_extension';
+        return 'app.twig.function.service';
     }
 }

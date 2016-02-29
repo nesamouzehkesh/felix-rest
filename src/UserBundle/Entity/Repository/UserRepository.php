@@ -5,7 +5,7 @@ namespace UserBundle\Entity\Repository;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Doctrine\ORM\NoResultException;
-use AppBundle\Library\Doctrine\BaseEntityRepository;
+use AppBundle\Library\Base\BaseEntityRepository;
 use UserBundle\Entity\User;
 use UserBundle\Entity\Role;
 

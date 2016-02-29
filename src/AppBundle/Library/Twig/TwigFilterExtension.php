@@ -11,6 +11,9 @@ use \Twig_Extension;
  */
 class TwigFilterExtension extends Twig_Extension
 {
+    const ICON_TEMPLATE = '<span class="%s %s"></span>';
+    const ALERT_TEMPLATE = '<div class="alert alert-%s alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>%s</div>';
+        
     /** 
      * 
      * @var Translator  
@@ -39,6 +42,15 @@ class TwigFilterExtension extends Twig_Extension
                 array($this, 'icon'), 
                 array('is_safe' => array('html'))
                 ),
+            new \Twig_SimpleFilter(
+                'mapTo', 
+                array($this, 'mapTo')
+                ),
+            new \Twig_SimpleFilter(
+                'showAlert', 
+                array($this, 'showAlert'), 
+                array('is_safe' => array('html'))
+                ),            
             );
     }
     
@@ -51,18 +63,52 @@ class TwigFilterExtension extends Twig_Extension
     public function icon($icon, $extraClass = '')
     {
         return sprintf(
-            '<span class="%s %s"></span>', 
+            self::ICON_TEMPLATE, 
             $this->translator->trans($icon), 
             $extraClass
             );
     }
-
+    
+    /**
+     * 
+     * @param type $uri
+     * @return type
+     */
+    public function mapTo($index, array $from)
+    {
+        $total = count($from);
+        if ($total > 0) {
+            $key = ($index % $total) - 1;
+            if (array_key_exists($key, $from)) {
+                return $from[$key];
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Show an Alert
+     * 
+     * @param type $alert
+     * @param type $alertType
+     * @return type
+     */
+    public function showAlert($alert, $alertType)
+    {
+        return sprintf(
+            self::ALERT_TEMPLATE, 
+            $alertType, 
+            $this->translator->trans($alert)
+            );
+    }
+    
     /**
      * 
      * @return string
      */
     public function getName()
     {
-        return 'twig_filter_extension';
+        return 'app.twig.filter.service';
     }     
 }

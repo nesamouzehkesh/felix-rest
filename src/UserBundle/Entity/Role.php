@@ -4,7 +4,7 @@ namespace UserBundle\Entity;
 use Symfony\Component\Security\Core\Role\RoleInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use AppBundle\Entity\BaseEntity;
+use AppBundle\Library\Base\BaseEntity;
 
 /**
  * @ORM\Table(name="nesa_role")

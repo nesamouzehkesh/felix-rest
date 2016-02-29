@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use AppBundle\Library\Base\BaseController;
 
 class AppApiController extends BaseController
 {
@@ -10,7 +11,7 @@ class AppApiController extends BaseController
      * Get flash bag message view
      * 
      * @return \Symfony\Component\HttpFoundation\JsonResponse
-     * @Route("/app/api/flashbag", name="nesa_app_display_flash_bag")
+     * @Route("/app/api/flashbag", name="api_app_flashbag")
      */
     public function displayFlashBagAction()
     {
@@ -22,7 +23,7 @@ class AppApiController extends BaseController
         
         // Generate the view for these $messageGroups
         $view = $this->renderView(
-            'AppBundle:AppApi:displayFlashBag.html.twig', 
+            '::admin/app/flashBag.html.twig', 
             array(
                 'messageGroups' => $messageGroups
             ));

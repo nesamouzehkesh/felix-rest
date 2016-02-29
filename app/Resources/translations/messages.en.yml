@@ -117,3 +117,42 @@ icon:
         remove: glyphicon glyphicon-remove-sign
         minus: glyphicon glyphicon-minus-sign
         plus: glyphicon glyphicon-plus-sign
+
+
+form:
+    felix_label_form:
+        title: Label
+        icon: glyphicon glyphicon-tags
+        description: "You can create new label or edit your existing label in this form"
+    felix_page_form:
+        title: Page
+        icon: glyphicon glyphicon-th-large
+        description: "You can create new page or edit your existing page in this form"
+
+
+
+module: 
+    label:
+        title: Label
+        description: "Edit your profile, update your username and password, and manage other account settings."
+        icon: glyphicon glyphicon-tags
+    page:
+        title: Pages
+        description: "Edit your profile, update your username and password, and manage other account settings."
+        icon: glyphicon glyphicon-file
+    user:
+        title: Users
+        description: "Edit your profile, update your username and password, and manage other account settings."
+        icon: glyphicon glyphicon-user
+    product:
+        title: Product
+        description: "Edit your profile, update your username and password, and manage other account settings."
+        icon: glyphicon glyphicon-shopping_bag
+    playground:
+        title: Playground
+        description: "Edit your profile, update your username and password, and manage other account settings."
+        icon: glyphicon glyphicon-star
+    order:
+        title: Orders
+        description: "Edit your profile, update your username and password, and manage other account settings."
+        icon: glyphicon glyphicon-shopping-cart

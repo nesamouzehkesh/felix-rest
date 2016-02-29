@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html class="ng-scope" ng-app="myApp">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset={{ _charset }}"/>
+        <meta name="robots" content="noindex,nofollow" />
+        <title>{% block title %}{% endblock %}</title>
+        {% include "::_asset.html.twig" %}
+        {% block htmlHeader %}{% endblock %}
+    </head>
+        
+    <body>
+        <div class="block margin-top-10">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                {% block body %}{% endblock %}
+              </div>
+            </div>        
+        </div>
+        {% block script %}{% endblock %}    
+    </body>
+</html>

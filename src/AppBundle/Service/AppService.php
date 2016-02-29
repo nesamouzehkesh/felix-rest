@@ -7,16 +7,15 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Validator\Validator\RecursiveValidator;
-use AppBundle\Library\Exception\VisibleHttpException;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Knp\Component\Pager\Paginator;
+use AppBundle\Library\Base\BaseService;
+use AppBundle\Library\Exception\AppException;
 use AppBundle\Service\Session as SessionService;
 use AppBundle\Entity\BaseEntity;
 
-class AppService 
+class AppService extends BaseService
 {
-    const PARAM_SEARCH_TEXT = 'searchText';
-    const PARAM_SEARCH_TARGET = 'searchTarget';
-    const PARAM_SEARCH_TYPE = 'searchType';
-    
     /**
      * Translator services
      * 
@@ -38,9 +37,21 @@ class AppService
     
     /**
      *
+     * @var RequestStack $requestStack
+     */
+    protected $requestStack;
+    
+    /**
+     *
      * @var ValidatorInterface $validator
      */
     protected $validator;
+    
+    /**
+     *
+     * @var Paginator $paginator
+     */
+    protected $paginator;    
     
     /**
      *
@@ -51,8 +62,10 @@ class AppService
     /**
      * 
      * @param Translator $translator
-     * @param Security $security
+     * @param TokenStorage $security
      * @param EntityManager $em
+     * @param RequestStack $requestStack
+     * @param Paginator $paginator
      * @param RecursiveValidator $validator
      * @param SessionService $sessionService
      */
@@ -60,44 +73,23 @@ class AppService
         Translator $translator, 
         TokenStorage $security,
         EntityManager $em,
+        RequestStack $requestStack,
+        Paginator $paginator,
         RecursiveValidator $validator,
-        SessionService $sessionService
+        SessionService $sessionService,
+        $parameters = array()
         ) 
     {
         $this->translator = $translator;
         $this->security = $security;
         $this->em = $em;
+        $this->requestStack = $requestStack;
+        $this->paginator = $paginator;
         $this->validator = $validator;
         $this->sessionService = $sessionService;
+        $this->setParametrs($parameters);
     }   
-    
-    /**
-     * Starts a transaction by suspending auto-commit mode.
-     */
-    public function transactionBegin()
-    {
-        $this->getEntityManager()->getConnection()->beginTransaction();
-    }
-    
-    /**
-     * Commits the current transaction
-     */
-    public function transactionCommit()
-    {
-        $this->getEntityManager()->getConnection()->commit();
-    }
-    
-    /**
-     * Cancels any database changes done during the current transaction.
-     *
-     * This method can be listened with onPreTransactionRollback and onTransactionRollback
-     * eventlistener methods.
-     */    
-    public function transactionRollback()
-    {
-        $this->getEntityManager()->getConnection()->rollback();
-    }
-    
+
     /**
      * 
      * @return SessionService
@@ -137,6 +129,16 @@ class AppService
     }
     
     /**
+     * 
+     * @return RequestStack
+     */
+    public function getRequestStack()
+    {
+        return $this->requestStack;
+    }
+
+
+    /**
      * Soft-delete an entity
      * 
      * @param type $entity
@@ -144,47 +146,71 @@ class AppService
     public function deleteEntity($entity)
     {
         if ($entity instanceof BaseEntity) {
-            $entity->setDeleted(true);
-            $entity->setDeletedTime();
-        
-            $this->em->flush();
+            return;
         }
-    }
-    
-    /**
-     * Persist an entity in entity manager
-     * 
-     * @param type $entity
-     */
-    public function persistEntity($entity)
-    {
-        $this->em->persist($entity);
-    }
-    
-    /**
-     * Flush entity manager
-     */
-    public function flushEntityManager()
-    {
-        $this->em->flush();        
+        
+        $entity->setDeleted(true);
+        $entity->setDeletedTime();
+        $this->em->flush();
     }
     
     /**
      * Persist an flush entity manager for this entity
      * 
      * @param type $entity
-     * @param type $flushEntityManager
+     * @param type $flush
      * @return \Library\Service\Helper
      */
-    public function saveEntity($entity, $flushEntityManager = true)
+    public function saveEntity($entity, $flush = true)
     {
-        $this->persistEntity($entity);
-        if ($flushEntityManager) {
-            $this->flushEntityManager();
+        $this->em->persist($entity);
+        if ($flush) {
+            $this->em->flush();
         }
         
         return $this;
     }
+    
+    /**
+     * use Knp\Component\Pager\Pagination\AbstractPagination;
+     * 
+     * @return type
+     */
+    public function getPaginator()
+    {
+        return $this->paginator;
+    }
+        
+    /**
+     * 
+     * @param type $query
+     * @return type
+     */
+    public function paginate($query)
+    {
+        $request = $this->getRequestStack()->getCurrentRequest();
+        $limit = $this->getParameter('paginateLimit', 10);
+        $itemsPagination = $this->getPaginator()->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            $limit
+        );
+        
+        $currentPageNumber = $itemsPagination->getCurrentPageNumber();
+        $totalItemCount = $itemsPagination->getTotalItemCount();
+        $itemNumberPerPage = $itemsPagination->getItemNumberPerPage();
+        if (count($itemsPagination) == 0) {
+            $currentPageNumber = ceil($totalItemCount / $itemNumberPerPage);
+            $itemsPagination = $this->getPaginator()->paginate(
+                $query,
+                $currentPageNumber,
+                $limit
+            );
+            $itemsPagination->setCurrentPageNumber($currentPageNumber);
+        }
+        
+        return $itemsPagination;
+    }     
     
     /**
      * 
@@ -221,61 +247,63 @@ class AppService
     
     /**
      * 
-     * @param type $message
+     * @param type $messageId
+     * @param type $parameters
      * @return type
-     * @throws \Exception
      */
-    public function transMessage($message)
+    public function transMessage($messageId, $parameters = array())
     {
-        if (is_array($message)) {
-            if (array_key_exists(0, $message)) {
-                return $this->getTranslator()->trans($message[0], $message[1]);
+        if (is_array($messageId)) {
+            if (array_key_exists(1, $messageId)) {
+                $parameters = $messageId[1];
+            }
+            if (array_key_exists(0, $messageId)) {
+                $messageId = $messageId[0];
             } else {
-                throw new \Exception('Message format is not right');
+                $messageId = null;
             }
         }
         
-        return $this->getTranslator()->trans($message);
+        return $this->getTranslator()->trans($messageId, $parameters);
     }     
     
     /**
      * 
-     * @param type $message
+     * @param type $messageId
      * @param type $ex
      * @param type $responseParam
      * @return type
      */
-    public function getExceptionResponse($message, $ex = null, $responseParam = null)
+    public function getExceptionResponse($messageId, $ex = null, $responseParam = null)
     {
-        return $this->getJsonResponse(false, $message, null, $responseParam, $ex);
+        return $this->getJsonResponse(false, $messageId, null, $responseParam, $ex);
     }
     
     /**
      * 
      * @param type $success
-     * @param type $message
+     * @param type $messageId
      * @param type $content
-     * @param type $responseParam
+     * @param type $parameters
      * @param type $ex
      * @return JsonResponse
      * @throws \Exception
      */
     public function getJsonResponse(
         $success, 
-        $message = null, 
+        $messageId = null, 
         $content = null, 
-        $responseParam = null, 
+        $parameters = null, 
         $ex = null
         )
     {
         // Set jason success status
         $response['success'] = $success;
-        $response['message'] = $this->transMessage($message);
+        $response['message'] = $this->transMessage($messageId);
         
-        // Get exception error and add it to responce message
-        $exceptionError = $this->getExceptionError($ex);
-        if (null !== $exceptionError) {
-            $response['message'] = sprintf('%s [%s]', $response['message'], $exceptionError);
+        // If the exception is instace of AppException then we will display it
+        if ($ex instanceof AppException) {
+            $response['message'] = sprintf('%s [%s]', $response['message'], $ex->getMessage());
         }
         
         // Set jason contet if it is provide
@@ -284,35 +312,21 @@ class AppService
         }
         
         // Merge jason responce with some extra user parameters
-        if (null !== $responseParam) {
-            $response = array_merge($response, $responseParam);
+        if (null !== $parameters) {
+            $response = array_merge($response, $parameters);
         }
         
         return new JsonResponse($response);
     }
     
     /**
-     * Get exception error
-     *
-     * @param \Exception $ex
-     * @param null|bool $forceToShow
-     * @return string $exceptionError
+     * 
+     * @param type $messageId
+     * @param \Exception $previous
+     * @return AppException
      */
-    private function getExceptionError($ex, $forceToShow = false)
+    public function getAppException($messageId = null, \Exception $previous = null)
     {
-        // If the exception is instace of PmsHttpException then we will display
-        // its message to the end user. 
-        if ($ex instanceof VisibleHttpException) {
-            $forceToShow = true;
-        }
-        
-        $exceptionError = null;
-        // $showErrorConfig = $this->container->getParameter('elmo_show_exception_error_detail');
-        $showErrorConfig = true;
-        if (null !== $ex and is_a($ex, '\Exception')) {
-            $exceptionError = ($showErrorConfig || $forceToShow)? $ex->getMessage() : '';
-        }
-        
-        return $exceptionError;
+        return new AppException($this->transMessage($messageId), $previous);
     }
 }

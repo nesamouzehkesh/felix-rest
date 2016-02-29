@@ -2,7 +2,7 @@
 
 namespace UserBundle\Entity\Repository;
 
-use AppBundle\Library\Doctrine\BaseEntityRepository;
+use AppBundle\Library\Base\BaseEntityRepository;
 use UserBundle\Entity\Role;
 
 class RoleRepository extends BaseEntityRepository 

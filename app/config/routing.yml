@@ -1,38 +1,40 @@
+# Admin modules routing configurations
 cms:
-    resource: "@CmsBundle/Controller/"
+    resource: "@PageBundle/Controller/"
     type:     annotation
-    prefix:   /admin/cms
+    prefix:   /admin/pages
 
 user:
     resource: "@UserBundle/Controller/"
     type:     annotation
-    prefix:   /admin/user
-    
-product:
-    resource: "@ProductBundle/Controller/"
-    type:     annotation
-    prefix:   /admin/product
+    prefix:   /admin/users
 
 app:
     resource: "@AppBundle/Controller/"
     type:     annotation
-    prefix:   /admin/app
+    prefix:   /admin
 
+# Front-end modules routing configurations
+front_cms:
+    resource: "@PageBundle/Controller/PageFrontController.php"
+    type:     annotation
+    prefix:   /
+    
 
 # Route configs related to admin login page
-nesa_login:
-    path:     /login/{isWeb}
-    defaults: { _controller: AppBundle:Security:login, isWeb: false }
-nesa_login_check:
+app_login:
+    path:     /login/{isFront}
+    defaults: { _controller: AppBundle:Security:login, isFront: false }
+app_login_check:
     path: /admin/login_check
-nesa_logout:
+app_logout:
     path: /admin/logout
 
 # Route configs related to customers login page
-nesa_login_web:
-    path:     /shopp/login/{isWeb}
-    defaults: { _controller: AppBundle:Security:login, isWeb: true }
-nesa_login_check_web:
+front_login:
+    path:     /shopp/login/{isFront}
+    defaults: { _controller: AppBundle:Security:login, isFront: true }
+front_login_check:
     path: /shopping/login_check
-nesa_logout_web:
+front_logout:
     path: /shopping/logout

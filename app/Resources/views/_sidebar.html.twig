@@ -1,0 +1,53 @@
+{% import _self as self %}
+
+{% spaceless %}
+    {# Display full view side bar #}
+    <div class="default full-block">
+        <div class="header">
+            {% if app.user.userName is defined %}
+            <div class="user-info">
+                <span class="ghost">{{ 'word.signedInAs'|trans }}</span>
+                <span class="userName">{{ app.user.userName }}</span>
+            </div>
+            <a class="btnr btnr-default-inv sidebar-toggle-close" id="main-sidebar-toggle">
+                <span class="glyphicon"></span>
+            </a>
+            {% endif %}
+        </div>
+        <div class="body margin-top-20">
+            {% for key, module in twig.app.modules %}
+                <a href="{{ path(module.route) }}" class="sidebar-links" title="{{ ('module.' ~ key ~ '.title')|trans }}">
+                    <span class="{{ loop.index|mapTo(['color-red', 'color-blue', 'color-green', 'color-yellow', 'color-violet', 'color-white']) }}">
+                        {{ ('module.' ~ key ~ '.icon')|icon }}
+                    </span> 
+                    <span class="module-title">
+                        {{ ('module.' ~ key ~ '.title')|trans }}
+                    </span>
+                </a>
+            {% endfor %}
+        </div>
+        <div class="footer">
+           <a href="{{ path('app_logout') }}">{{ 'icon.logout'|icon }} {{ 'action.logout'|trans }}</a>
+        </div>           
+    </div>
+        
+    {# Display small view side bar #}
+    <div class="default small-block">
+        <div class="header">
+        </div>
+        <div class="body">
+            {% for key, module in twig.app.modules %}
+                <a href="{{ path(module.route) }}" class="sidebar-links" title="{{ ('module.' ~ key ~ '.title')|trans }}">
+                    <span class="{{ loop.index|mapTo(['color-red', 'color-blue', 'color-green', 'color-yellow', 'color-violet', 'color-white']) }}">
+                        {{ ('module.' ~ key ~ '.icon')|icon }}
+                    </span> 
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+{% endspaceless %}
+        
+{% macro isActive(rout) %}
+    {% set currentRout = app.request.attributes.get('_route') %}
+    {{ (currentRout == rout)? 'active' : '' }}
+{% endmacro %}

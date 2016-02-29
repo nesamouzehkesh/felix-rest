@@ -1,0 +1,45 @@
+{% extends "::base.html.twig" %}
+
+{% block header %}
+    <a href="{{ path('page_admin_add') }}" class="btn btn-primary" class="btn">Add New Page</a>
+{% endblock %}
+
+{% block body %}
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                {# sorting of properties based on query components #}
+                <th>{{ knp_pagination_sortable(pagination, 'Id', 'page.id') }}</th>
+                <th>{{ knp_pagination_sortable(pagination, 'Title', 'page.title') }}</th>
+                <th>{{ knp_pagination_sortable(pagination, 'URL', 'page.url') }}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {# table body #}
+        {% for page in pagination %}
+            <tr {% if loop.index is odd %} class="color" {% endif %} >
+                <td>{{ page.id }}</td>
+                <td>{{ page.title }}</td>
+                <td>{{ page.url }}</td>
+                <td>
+                    <div class="pull-right">
+                        <a href="{{ path('page_admin_edit', {'id': page.id }) }}">
+                            {{ 'icon.edit'|icon }} {{ 'action.edit'|trans }}
+                        </a>
+                        
+                        <a href="{{ path('page_admin_delete', {'id': page.id }) }}">
+                            {{ 'icon.delete'|icon }} {{ 'action.delete'|trans }}
+                        </a>
+                    </div>  
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {# display navigation #}
+    <div class="navigation">
+        {{ knp_pagination_render(pagination) }}
+    </div>    
+{% endblock %}
