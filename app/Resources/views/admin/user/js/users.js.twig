@@ -3,13 +3,14 @@ $(function(){
     
     $('.action-add-user, .action-edit-user').click(function(e){
         var url = $(this).attr('data-url');
-        var formContainer = $('#user-form-container');
+        var userFormModal = $('#user-form-container');
         
-        showModal(formContainer);
+        showModal(userFormModal);
         $.get(url, function(response) {
             if (response.success === true) {
-                postItemForm(response, formContainer);
+                postItemForm(response, userFormModal);
             } else {
+                hideModal(userFormModal);
                 bootbox.alert(response.message);
             }
         }, 'json');        
@@ -35,6 +36,18 @@ $(function(){
             }
         });        
     });
+    
+    function showModal(modal)
+    {
+        modal.modal('show');
+        modal.html('<div class="modal-dialog"><div class="modal-content"><div class="modal-body"><p>Loading ...</p></div></div></div>'); 
+    }
+
+    function hideModal(modal)
+    {
+        modal.modal('hide');
+        modal.html(''); 
+    }
         
     function postItemForm(response, formContainer)
     {
@@ -51,10 +64,8 @@ $(function(){
                     } else {
                         Ladda.stopAll();
                         var formMessage = form.find('.form-message');
-                        
                         formMessage.html(getAlart(response.message, 'warning'));
                         formMessage.show();
-                        
                         formMessage.delay(2000).slideUp();
                     }
                 }
@@ -62,6 +73,5 @@ $(function(){
             return false;
         });
     }     
-    
 });
 </script>

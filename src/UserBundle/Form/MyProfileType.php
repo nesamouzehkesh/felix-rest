@@ -5,6 +5,9 @@ namespace UserBundle\Form;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 
 /**
  * 
@@ -26,22 +29,22 @@ class MyProfileType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('username', 'text')
-            ->add('firstName', 'text')
-            ->add('lastName', 'text')
-            ->add('currentPassword', 'password', array(
+            ->add('username', TextType::class)
+            ->add('firstName', TextType::class)
+            ->add('lastName', TextType::class)
+            ->add('currentPassword', PasswordType::class, array(
                 'mapped' => false, 
                 'required' => false
                 ))
-            ->add('password', 'password', array(
+            ->add(PasswordType::class, PasswordType::class, array(
                 'mapped' => false, 
                 'required' => false
                 ))
-            ->add('rePassword', 'password', array(
+            ->add('rePassword', PasswordType::class, array(
                 'mapped' => false, 
                 'required' => false
                 ))
-            ->add('changePassword', 'checkbox', array(
+            ->add('changePassword', CheckboxType::class, array(
                 'mapped' => false,
                 'data' => false,
                 'label'    => 'I want to change the password',
@@ -55,6 +58,6 @@ class MyProfileType extends AbstractType
      */
     public function getName()
     {
-        return 'saman_user_form';
+        return 'user_form';
     }
 }

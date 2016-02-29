@@ -7,6 +7,9 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 
 /**
  * 
@@ -32,33 +35,33 @@ class UserType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('username', 'text')
-            ->add('firstName', 'text')
-            ->add('lastName', 'text');
+            ->add('username', TextType::class)
+            ->add('firstName', TextType::class)
+            ->add('lastName', TextType::class);
         
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
             $form = $event->getForm();
             $user = $event->getData();
 
             $form
-                ->add('password', 'password', array(
+                ->add('password', PasswordType::class, array(
                     'mapped' => false, 
                     'required' => false
                     ))
-                ->add('rePassword', 'password', array(
+                ->add('rePassword', PasswordType::class, array(
                     'mapped' => false, 
                     'required' => false
                 ));
 
             if (null !== $user->getId()) {
                 if ($user->hasAdminRole()) {
-                    $form->add('currentPassword', 'password', array(
+                    $form->add('currentPassword', PasswordType::class, array(
                         'mapped' => false, 
                         'required' => false
                         ));
                 }
 
-                $form->add('changePassword', 'checkbox', array(
+                $form->add('changePassword', CheckboxType::class, array(
                     'mapped' => false,
                     'data' => false,
                     'label'    => 'I want to change the password',
@@ -74,6 +77,6 @@ class UserType extends AbstractType
      */
     public function getName()
     {
-        return 'saman_user_form';
+        return 'user_form';
     }
 }

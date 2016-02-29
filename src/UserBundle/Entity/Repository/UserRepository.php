@@ -42,7 +42,7 @@ class UserRepository extends BaseEntityRepository implements UserLoaderInterface
      * @param type $readOnly
      * @return type
      */
-    public function findAllUsers()
+    public function getUsers()
     {
         $qb = $this->getQueryBuilder()
             ->select('u')

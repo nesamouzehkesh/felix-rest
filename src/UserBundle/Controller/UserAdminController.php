@@ -2,6 +2,7 @@
 
 namespace UserBundle\Controller;
 
+use Symfony\Component\Form\Form;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Library\Base\BaseController;
@@ -18,26 +19,19 @@ class UserAdminController extends BaseController
      * 
      * @Route("/", name="user_admin_index")
      */
-    public function displayUsersAction(Request $request)
+    public function indexAction()
     {
-        // Get ObjectManager
-        $em = $this->getDoctrine()->getManager();
+        // Get a query of listing all users from user service
+        $pages = $this->get('app.user.service')->getUsers();
         
-        // Get all Users
-        $usersQuery = User::getRepository($em)->findAllUsers();
-
-        $paginator  = $this->get('knp_paginator');
-        $usersPagination = $paginator->paginate(
-            $usersQuery, /* query NOT result */
-            $request->query->getInt('page', 1),
-            5
-        );        
+        // Get pagination
+        $pagination = $this->get('app.service')->paginate($pages);
         
         // Render and return the view
         return $this->render(
-            'UserBundle:User:users.html.twig',
+            '::admin/user/users.html.twig',
             array(
-                'usersPagination' => $usersPagination
+                'pagination' => $pagination
                 )
             );
     }
@@ -45,11 +39,11 @@ class UserAdminController extends BaseController
     /**
      * 
      * @return type
-     * @Route("/myprofile", name="nesa_admin_myprofile")
+     * @Route("/myprofile", name="user_admin_myprofile")
      */
     public function myprofileAction()
     {
-        $user = $this->getAppService()->getUser();
+        $user = $this->getUser();
         
         return $this->render(
             'UserBundle:User:myprofile.html.twig', 
@@ -62,9 +56,9 @@ class UserAdminController extends BaseController
      * 
      * @param type $userId
      * @return type
-     * @Route("/display/{userId}", name="nesa_admin_user_display")
+     * @Route("/view/user{userId}", name="user_admin_view")
      */
-    public function displayUserAction($userId)
+    public function viewUserAction($userId)
     {
         try {
             // Get ObjectManager
@@ -81,7 +75,10 @@ class UserAdminController extends BaseController
 
             return $this->getAppService()->getJsonResponse(true, null, $view);        
         } catch (\Exception $ex) {
-            return $this->getExceptionResponse('Can not display this user', $ex);
+            return $this->getAppService()->getExceptionResponse(
+                'Can not display this user', 
+                $ex
+                );
         }  
     }
     
@@ -90,8 +87,8 @@ class UserAdminController extends BaseController
      * 
      * @param \Symfony\Component\HttpFoundation\Request $request
      * @return type
-     * @Route("/edit/{userId}", name="nesa_admin_user_edit")
-     * @Route("/add", name="nesa_admin_user_add", defaults={"id" = null})
+     * @Route("/edit/user/{userId}", name="user_admin_edit")
+     * @Route("/add/user", name="user_admin_add", defaults={"id" = null})
      */
     public function addEditUserAction(Request $request, $userId = null)
     {
@@ -113,7 +110,7 @@ class UserAdminController extends BaseController
             $userForm->handleRequest($request);
             // If form is submited and it is valid then add or update this $user
             if ($userForm->isValid()) {
-                $result = $this->getUserService()->userFormIsValid($userForm);
+                $result = $this->userFormIsValid($userForm);
                 if (true !== $result) {
                     return $this->getAppService()->getJsonResponse(false, $result);
                 }
@@ -134,7 +131,10 @@ class UserAdminController extends BaseController
 
             return $this->getAppService()->getJsonResponse(true, null, $view);
         } catch (\Exception $ex) {
-            return $this->getExceptionResponse('Can not add or edit user', $ex);
+            return $this->getAppService()->getExceptionResponse(
+                'Can not add or edit user', 
+                $ex
+                );
         }         
     }
     
@@ -143,7 +143,7 @@ class UserAdminController extends BaseController
      * 
      * @param type $userId
      * @return type
-     * @Route("/delete/{userId}", name="nesa_admin_user_delete")
+     * @Route("/delete/{userId}", name="user_admin_delete")
      */
     public function deleteUserAction($userId)
     {
@@ -161,7 +161,7 @@ class UserAdminController extends BaseController
 
             return $this->getAppService()->getJsonResponse(true);
         } catch (\Exception $ex) {
-            return $this->getExceptionResponse(
+            return $this->getAppService()->getExceptionResponse(
                 'alert.error.canNotDeleteItem', 
                 $ex
                 );
@@ -170,10 +170,64 @@ class UserAdminController extends BaseController
     
     /**
      * 
+     * @param Form $userForm
+     * @return string|boolean
+     */
+    private function userFormIsValid(Form $userForm)
+    {
+        $em = $this->appService->getEntityManager();
+        $user = $userForm->getData();
+        $userName = $user->getUsername();
+        
+        // Check the username
+        if (!preg_match("/^[a-zA-Z ]*$/", $userName)) {
+            return "Only letters and white space allowed";
+        }
+
+        // Check the username
+        if (!User::getRepository($em)->canUserUseUsername($user, $userName)) {
+            return 'This username is already used';
+        }
+
+        if ($userForm->has('changePassword')) {
+            if ($userForm->get('changePassword')->getData()) {
+                // Check password and rePassword
+                $password = $userForm->get('password')->getData();
+                $rePassword = $userForm->get('rePassword')->getData();
+                if ($password !== $rePassword) {
+                    return 'Passwords are no matched';
+                }
+                // Check user current password
+                if ($userForm->has('currentPassword')) {
+                    $currentPassword = $userForm->get('currentPassword')->getData();
+                    if ($user->getPassword() !== md5($currentPassword)) {
+                        return 'Current passwords is not valid';
+                    }
+                }
+                // Set this $password for user password
+                $user->setPassword($password);
+            }
+        } else {
+            // Check password and rePassword
+            $password = $userForm->get('password')->getData();
+            $rePassword = $userForm->get('rePassword')->getData();
+            if ($password !== $rePassword) {
+                return 'Passwords are no matched';
+            }
+            
+            // Set this $password for user password
+            $user->setPassword($password);
+        }
+        
+        return true;
+    }    
+    
+    /**
+     * 
      * @return \UserBundle\Service\UserService
      */
     private function getUserService()
     {
         return $this->get('app.user.service');
-    }
+    }    
 }

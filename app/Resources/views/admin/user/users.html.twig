@@ -4,11 +4,11 @@
     <div class="block" id="headerContainer">
         <div class="row">
             <div class="col-md-5">
-                <button data-url="{{ path('saman_admin_user_add') }}" type="button" class="btn btn-primary btn-sm action-add-user" data-target="#user-form-container">{{ 'icon.add'|icon }} {{ 'action.addNewItem'|trans }}</button>
+                <button data-url="{{ path('user_admin_add') }}" type="button" class="btn btn-primary btn-sm action-add-user" data-target="#user-form-container">{{ 'icon.add'|icon }} {{ 'action.addNewItem'|trans }}</button>
             </div>
             <div class="col-md-7">
                 <div class="pull-right">
-                    <a href="{{ path('saman_admin_myprofile') }}">{{ 'icon.user'|icon }} My Profile</a>
+                    <a href="{{ path('user_admin_myprofile') }}">{{ 'icon.user'|icon }} My Profile</a>
                 </div>
             </div>
         </div>            
@@ -29,7 +29,7 @@
         </thead>
         <tbody>
 
-        {% for user in usersPagination %}
+        {% for user in pagination %}
             <tr>
                 <td>{{ user.username }}</td>
                 <td>{{ user.firstName }} {{ user.lastName }}</td>
@@ -38,7 +38,7 @@
                         {{ button(
                               'action.display', 
                               {
-                                  url: path('nesa_admin_user_display', {'userId': user.id}),
+                                  url: path('user_admin_view', {'userId': user.id}),
                                   icon: 'icon.display', 
                                   toggleModal: 'user-view-container', 
                                   action: 'action-display-user'
@@ -46,7 +46,7 @@
                         {{ button(
                             'action.edit', 
                             {
-                                url: path('nesa_admin_user_edit', {'userId': user.id}),
+                                url: path('user_admin_edit', {'userId': user.id}),
                                 icon: 'icon.edit', 
                                 toggleModal: 'user-form-container', 
                                 action: 'action-edit-user'
@@ -54,7 +54,7 @@
                         {{ button(
                             'action.delete', 
                             {
-                                url: path('nesa_admin_user_delete', {'userId': user.id }),
+                                url: path('user_admin_delete', {'userId': user.id }),
                                 icon: 'icon.delete', 
                                 action: 'action-delete-user',
                             }) }}
@@ -64,8 +64,13 @@
         {% endfor %}
         </tbody>
     </table> 
+
+    {# display navigation #}
+    <div class="navigation">
+        {{ knp_pagination_render(pagination) }}
+    </div>        
 {% endblock %}
     
 {% block script %}
-    {% include 'UserBundle:User:js/users.js.twig' %}
+    {% include '::admin/user/js/users.js.twig' %}
 {% endblock %}

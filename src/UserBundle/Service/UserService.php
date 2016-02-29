@@ -2,7 +2,6 @@
 
 namespace UserBundle\Service;
 
-use Symfony\Component\Form\Form;
 use AppBundle\Service\AppService;
 use UserBundle\Entity\User;
 use UserBundle\Entity\Role;
@@ -21,60 +20,6 @@ class UserService
     public function __construct(AppService $appService) 
     {
         $this->appService = $appService;
-    }
-        
-    /**
-     * 
-     * @param Form $userForm
-     * @return string|boolean
-     */
-    public function userFormIsValid(Form $userForm)
-    {
-        $em = $this->appService->getEntityManager();
-        $user = $userForm->getData();
-        $userName = $user->getUsername();
-        
-        // Check the username
-        if (!preg_match("/^[a-zA-Z ]*$/", $userName)) {
-            return "Only letters and white space allowed";
-        }
-
-        // Check the username
-        if (!User::getRepository($em)->canUserUseUsername($user, $userName)) {
-            return 'This username is already used';
-        }
-
-        if ($userForm->has('changePassword')) {
-            if ($userForm->get('changePassword')->getData()) {
-                // Check password and rePassword
-                $password = $userForm->get('password')->getData();
-                $rePassword = $userForm->get('rePassword')->getData();
-                if ($password !== $rePassword) {
-                    return 'Passwords are no matched';
-                }
-                // Check user current password
-                if ($userForm->has('currentPassword')) {
-                    $currentPassword = $userForm->get('currentPassword')->getData();
-                    if ($user->getPassword() !== md5($currentPassword)) {
-                        return 'Current passwords is not valid';
-                    }
-                }
-                // Set this $password for user password
-                $user->setPassword($password);
-            }
-        } else {
-            // Check password and rePassword
-            $password = $userForm->get('password')->getData();
-            $rePassword = $userForm->get('rePassword')->getData();
-            if ($password !== $rePassword) {
-                return 'Passwords are no matched';
-            }
-            
-            // Set this $password for user password
-            $user->setPassword($password);
-        }
-        
-        return true;
     }
     
     /**
@@ -100,7 +45,7 @@ class UserService
             return $user;
         }
         
-        // Get ObjectManager
+        // Get Doctrine Entity Manager
         $em = $this->appService->getEntityManager();
 
         // Get User repository
@@ -113,6 +58,19 @@ class UserService
         
         // Return user object
         return $user;
+    }
+    
+    /**
+     * Get all users
+     * 
+     * @return type
+     */
+    public function getUsers()
+    {
+        // Get Doctrine Entity Manager
+        $em = $this->appService->getEntityManager();
+        
+        return User::getRepository($em)->getUsers();
     }
     
     /**

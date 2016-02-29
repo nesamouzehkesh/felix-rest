@@ -57,7 +57,7 @@ class BaseController extends Controller
      */
     public function getAppService()
     {
-        return $this->getService('app.service');
+        return $this->get('app.service');
     }
 
     /**
@@ -66,7 +66,7 @@ class BaseController extends Controller
      */
     public function getDispatcher()
     {
-        return $this->getService('event_dispatcher');
+        return $this->get('event_dispatcher');
     }
     
     /**
@@ -75,6 +75,6 @@ class BaseController extends Controller
      */
     public function getSession()
     {
-        return $this->getService('app.session.service');
+        return $this->get('app.session.service');
     }    
 }
