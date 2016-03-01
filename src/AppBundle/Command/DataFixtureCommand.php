@@ -26,7 +26,7 @@ class DataFixtureCommand extends ContainerAwareCommand
     {
         $router = $this->getContainer()->get('router');
         $dashboardUrl = $router->generate(
-            'nesa_app_display_dashboard',
+            'admin_app_dashboard',
             array(),
             UrlGeneratorInterface::ABSOLUTE_URL
             );
