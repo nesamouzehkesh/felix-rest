@@ -5,6 +5,7 @@ namespace UserBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 use AppBundle\Library\Base\BaseEntity;
 
 /**
@@ -23,6 +24,13 @@ class User extends BaseEntity implements AdvancedUserInterface, \Serializable
     private $id;
 
     /**
+     * @Assert\Email(
+     *     message = "error.emailIsNotValid",
+     *     checkMX = true
+     * )
+     * http://symfony.com/doc/current/reference/constraints/Email.html
+     * Look at constraints for more information
+     * 
      * @ORM\Column(type="string", length=255, unique=true)
      */
     private $username;

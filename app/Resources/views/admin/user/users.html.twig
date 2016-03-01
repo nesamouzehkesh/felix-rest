@@ -4,11 +4,19 @@
     <div class="block" id="headerContainer">
         <div class="row">
             <div class="col-md-5">
-                <button data-url="{{ path('user_admin_add') }}" type="button" class="btn btn-primary btn-sm action-add-user" data-target="#user-form-container">{{ 'icon.add'|icon }} {{ 'action.addNewItem'|trans }}</button>
+                {{ button(
+                      'action.add', 
+                      {
+                          url: path('admin_user_add'),
+                          icon: 'icon.add', 
+                          target: 'user-form-container', 
+                          type: 'primary',
+                          action: 'action-add-user'
+                      }) }}                 
             </div>
             <div class="col-md-7">
                 <div class="pull-right">
-                    <a href="{{ path('user_admin_myprofile') }}">{{ 'icon.user'|icon }} My Profile</a>
+                    <a href="{{ path('admin_user_myprofile') }}">{{ 'icon.user'|icon }} My Profile</a>
                 </div>
             </div>
         </div>            
@@ -16,9 +24,21 @@
 {% endblock %}
 
 {% block body %}
-    <div class="modal fade" id="user-form-container" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"></div>
-    <div class="modal fade" id="user-view-container" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"></div>
-
+    
+    {{ modal(
+        'user-form-container',
+        {
+            icon: 'icon.user', 
+            title: 'Add/Edit User'
+        }) }} 
+        
+    {{ modal(
+        'user-view-container',
+        {
+            icon: 'icon.user', 
+            title: 'Add/Edit User'
+        }) }} 
+    
     <table class="table table-hover">
         <thead>
             <tr>
@@ -38,23 +58,23 @@
                         {{ button(
                               'action.display', 
                               {
-                                  url: path('user_admin_view', {'userId': user.id}),
+                                  url: path('admin_user_view', {'userId': user.id}),
                                   icon: 'icon.display', 
-                                  toggleModal: 'user-view-container', 
+                                  target: 'user-view-container', 
                                   action: 'action-display-user'
                               }) }} 
                         {{ button(
                             'action.edit', 
                             {
-                                url: path('user_admin_edit', {'userId': user.id}),
+                                url: path('admin_user_edit', {'userId': user.id}),
                                 icon: 'icon.edit', 
-                                toggleModal: 'user-form-container', 
+                                target: 'user-form-container', 
                                 action: 'action-edit-user'
                             }) }}
                         {{ button(
                             'action.delete', 
                             {
-                                url: path('user_admin_delete', {'userId': user.id }),
+                                url: path('admin_user_delete', {'userId': user.id }),
                                 icon: 'icon.delete', 
                                 action: 'action-delete-user',
                             }) }}

@@ -1,19 +1,8 @@
 <script type="text/javascript">
 $(function(){
-    
+    {# Handle actions related to add/edit buttons #}
     $('.action-add-user, .action-edit-user').click(function(e){
-        var url = $(this).attr('data-url');
-        var userFormModal = $('#user-form-container');
-        
-        showModal(userFormModal);
-        $.get(url, function(response) {
-            if (response.success === true) {
-                postItemForm(response, userFormModal);
-            } else {
-                hideModal(userFormModal);
-                bootbox.alert(response.message);
-            }
-        }, 'json');        
+        handleForm($(this));
     });
     
     $('.action-display-user').click(function(e){
@@ -21,57 +10,7 @@ $(function(){
     });
     
     $('.action-delete-user').click(function(e){
-        var url = $(this).attr('data-url');
-        bootbox.confirm('Are you sure to delete this item', function(result) {
-            if (result) {
-                $.post(url, function(response) {
-                    if (response.success === true) {
-                        location.reload();
-                    } else{
-                        bootbox.alert(response.message);
-                    }
-                }, 'json');
-            } else {
-                return true;
-            }
-        });        
+        deleteItem($(this));
     });
-    
-    function showModal(modal)
-    {
-        modal.modal('show');
-        modal.html('<div class="modal-dialog"><div class="modal-content"><div class="modal-body"><p>Loading ...</p></div></div></div>'); 
-    }
-
-    function hideModal(modal)
-    {
-        modal.modal('hide');
-        modal.html(''); 
-    }
-        
-    function postItemForm(response, formContainer)
-    {
-        formContainer.html(response.content); 
-        var form = formContainer.find('form');
-        form.submit(function(e){
-            e.preventDefault();
-            postFormContent($(this), function(response) {
-                if (response.content !== undefined) {
-                    postItemForm(response, formContainer);
-                } else {
-                    if (response.success === true) {
-                        location.reload();
-                    } else {
-                        Ladda.stopAll();
-                        var formMessage = form.find('.form-message');
-                        formMessage.html(getAlart(response.message, 'warning'));
-                        formMessage.show();
-                        formMessage.delay(2000).slideUp();
-                    }
-                }
-            }, 'json');
-            return false;
-        });
-    }     
 });
 </script>

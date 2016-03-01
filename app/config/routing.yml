@@ -22,12 +22,12 @@ front_cms:
     
 
 # Route configs related to admin login page
-app_login:
+admin_login:
     path:     /login/{isFront}
     defaults: { _controller: AppBundle:Security:login, isFront: false }
-app_login_check:
+admin_login_check:
     path: /admin/login_check
-app_logout:
+admin_logout:
     path: /admin/logout
 
 # Route configs related to customers login page

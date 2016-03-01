@@ -69,8 +69,6 @@ $(document).ready(function(){
         }        
         $("#" + searchTextInput).attr('data-search-target', searchTarget);
     });    
-    
-    //Ladda.bind('button[type=submit]');
 });
 
 $.fn.isValid = function(){
@@ -140,30 +138,23 @@ function getFlashBag()
     }, 'json');
 }    
 
-function displayItem(button, cont_item)
+function displayItem(button)
 {
     var url = button.attr('data-url');
     var modal = $(button.attr('data-target'));
+    
     if (modal !== undefined) {
         showModal(modal);
-    }
-    
-    $.get(url, function(response) {
-        if (response.success === true) {
-            if (modal !== undefined) {
-                modal.html(response.content);
+        $.get(url, function(response) {
+            if (response.success === true) {
+                var $content = $(response.content);
+                modal.find('.modal-body').html($content.find('.modal-body').html());
+                modal.find('.modal-footer').html($content.find('.modal-footer').html());                
             } else {
-                cont_item.html(response.content);
-                cont_item.show();
+                modal.find('.modal-body').html(response.message);
             }
-        } else {
-            if (modal !== undefined) {
-                cont_item.modal('hide');
-            }
-            
-            bootbox.alert(response.message);
-        }
-    }, 'json'); 
+        }, 'json'); 
+    }
 }  
 
 function displayItems(url, cont_items, page)
@@ -213,7 +204,7 @@ function sortAble(sortContainer, callback) {
 function showModal(modal)
 {
     modal.modal('show');
-    modal.html('<div class="modal-dialog"><div class="modal-content"><div class="modal-body"><p>Loading ...</p></div></div></div>'); 
+    modal.find('.modal-body').html('<p>Loading ...</p>');
 }
 
 function hideModal(modal)
@@ -234,7 +225,7 @@ function handleForm(button, currentUrl, cont_items, currentPage, callback)
     
     $.get(url, function(response) {
         if (response.success === true) {
-            postForm(response, formModal, currentUrl, cont_items, currentPage);
+            handleFormSubmission(response, formModal, currentUrl, cont_items, currentPage);
             if (callback !== undefined) {
                 setTimeout(function() {      
                     callback(formModal);
@@ -276,16 +267,29 @@ function loadingMessage(status, cont_items)
     }
 }
 
-function postForm(response, formContainer, currentUrl, cont_items, currentPage)
+function handleFormSubmission(response, formContainer, currentUrl, cont_items, currentPage)
 {
-    formContainer.html(response.content); 
+    // turn the whole html response into a jQuery object without inserting it 
+    // into the DOM. This allows you to manipulate or look for specific elements 
+    // or values and do different things with different parts of the response
+    var $content = $(response.content);
+
+    
+    if(formContainer.find('.modal-body-content').length) {
+        formContainer.find('.modal-body-content').html(response.content);
+        formContainer.find('.form-body').addClass('modal-body');
+        formContainer.find('.form-footer').addClass('modal-footer');
+    } else {
+        formContainer.html(response.content); 
+    }
+    
     var form = formContainer.find('form');
     form.submit(function(e){
         e.preventDefault();
-        postFormContent($(this), function(response) {
+        submitForm($(this), function(response) {
             // If content has been defined then we display this form again, probably there is a form validation error
             if (response.content !== undefined) {
-                postForm(response, formContainer, currentUrl, cont_items, currentPage);
+                handleFormSubmission(response, formContainer, currentUrl, cont_items, currentPage);
             } else {
                 if (response.success === true) {
                     if (currentUrl === undefined || cont_items === undefined) {
@@ -295,7 +299,6 @@ function postForm(response, formContainer, currentUrl, cont_items, currentPage)
                         displayItems(currentUrl, cont_items, currentPage);
                     }                    
                 } else {
-                    Ladda.stopAll();
                     var formMessage = form.find('.form-message');
                     formMessage.html(getAlart(response.message, 'warning'));
                     formMessage.show();
@@ -304,6 +307,45 @@ function postForm(response, formContainer, currentUrl, cont_items, currentPage)
             }
         }, 'json');
         return false;
+    });
+}
+
+function submitForm($form, callback)
+{
+    var values = {};
+    var fields = {};
+
+    // If CKEDITOR is defined in this form, then we update it content
+    if (typeof CKEDITOR !== 'undefined') {
+        for (var instanceName in CKEDITOR.instances){
+            CKEDITOR.instances[instanceName].updateElement();
+        }
+    }
+
+    $.each($form.serializeArray(), function(i, field) {
+        var fieldName = field.name;
+        var fieldLength = fieldName.length;
+        if ('[]' === fieldName.substr(fieldLength - 2, fieldLength)) {
+            var fieldNewName = fieldName.substr(0, fieldLength - 2);
+            if (fields[fieldNewName] === undefined) {
+                fields[fieldNewName] = 0;
+            } else {
+                fields[fieldNewName] = fields[fieldNewName] + 1;
+            }
+            values[fieldNewName + '[' + fields[fieldNewName] + ']'] = field.value;  
+        } else {
+            values[fieldName] = field.value;
+        }
+    });
+
+    // Throw the form values to the server!
+    $.ajax({
+        type        : $form.attr('method'),
+        url         : $form.attr('action'),
+        data        : values,
+        success     : function(response) {
+            callback(response);
+        }
     });
 }
 
@@ -318,43 +360,4 @@ function getAlart(mesage, type)
     type = type === 'error'? 'danger' : type;
     
     return '<div class="alert alert-' + type + '" role="alert"><span class="' + icon[type] + '" aria-hidden="true"></span> ' + mesage + '</div>';
-}
-
-function postFormContent($form, callback)
-{
-  var values = {};
-  var fields = {};
-  // If CKEDITOR is defined in this form, then we update it content
-  if (typeof CKEDITOR !== 'undefined') {
-      for (var instanceName in CKEDITOR.instances){
-          CKEDITOR.instances[instanceName].updateElement();
-      }
-  }
-  
-  $.each($form.serializeArray(), function(i, field) {
-      var fieldName = field.name;
-      var fieldLength = fieldName.length;
-
-      if ('[]' === fieldName.substr(fieldLength - 2, fieldLength)) {
-          var fieldNewName = fieldName.substr(0, fieldLength - 2);
-          if (fields[fieldNewName] === undefined) {
-              fields[fieldNewName] = 0;
-          } else {
-              fields[fieldNewName] = fields[fieldNewName] + 1;
-          }
-          values[fieldNewName + '[' + fields[fieldNewName] + ']'] = field.value;  
-      } else {
-          values[fieldName] = field.value;
-      }
-  });
-
-  // Throw the form values to the server!
-  $.ajax({
-      type        : $form.attr('method'),
-      url         : $form.attr('action'),
-      data        : values,
-      success     : function(response) {
-          callback(response);
-      }
-  });
 }

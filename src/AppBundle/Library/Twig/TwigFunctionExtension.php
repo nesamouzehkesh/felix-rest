@@ -11,14 +11,6 @@ use \Twig_Extension;
  */
 class TwigFunctionExtension extends Twig_Extension
 {
-    const ICON_TEMPLATE = '<span class="%s"></span>';
-    const LINK_TEMPLATE = '<a href="%s" class="%s %s" %s>%s%s</a>';
-    const BUTTON_TEMPLATE = '<button %s %s type="button" class="btn btn-%s %s %s %s" %s %s>%s<span class="hidden-sm hidden-xs">%s</span></button>';
-    const BREADCRUMB_TEMPLATE = '<ol class="breadcrumb">%s</ol>';
-    const BREADCRUMB_TEXT_ITEM_TEMPLATE = '<li class="active">%s%s</li>';
-    const BREADCRUMB_LINK_ITEM_TEMPLATE = '<li><a href="%s" class="%s" %s>%s%s</a></li>';
-    const BREADCRUMB_JS_ACTION_ITEM_TEMPLATE = '<li><a href="#" %s class="%s %s" %s>%s%s</a></li>';
-    
     /** 
      * 
      * @var Translator  
@@ -43,6 +35,11 @@ class TwigFunctionExtension extends Twig_Extension
     {
         return array(
             new \Twig_SimpleFunction(
+                'modal', 
+                array($this, 'modal'),
+                array('is_safe' => array('html'))
+                ),            
+            new \Twig_SimpleFunction(
                 'breadcrumb', 
                 array($this, 'breadcrumb'),
                 array('is_safe' => array('html'))
@@ -59,231 +56,219 @@ class TwigFunctionExtension extends Twig_Extension
                 ),
             );
     }
+    
+    /**
+     * 
+     * @param type $id
+     * @param type $externalParam
+     * @return type
+     */
+    public function modal($id, $externalParam = array())
+    {
+        $param = array_merge(
+            array(
+                'description' => null,
+                'title' => null,
+                'icon' => null
+                ), 
+            $externalParam
+            );        
+        
+        $title = '';
+        if (null !== $param['title']) {
+            $title = sprintf(
+                '<h4 class="modal-title" id="myModalLabel">%s%s</h4>',
+                $this->getIcon($param['icon']),
+                $param['title']
+                );
+        }
+        
+        $modalHeader = sprintf(''
+            . '<div class="modal-header">'
+                . '<button type="button" class="close" data-dismiss="modal">'
+                    . '<span aria-hidden="true">&times;</span><span class="sr-only">%s</span>'
+                . '</button>%s'
+            . '</div>',
+            $this->translator->trans('action.close'),
+            $title
+            );
+        
+        return sprintf(''
+            . '<div class="modal fade" id="%s" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">'
+                . '<div class="modal-dialog">'
+                    . '<div class="modal-content">'
+                        . '%s'
+                        . '<div class="modal-body-content">'
+                            . '<div class="modal-body"></div>'
+                            . '<div class="modal-footer"></div>'
+                        . '</div>'
+                    . '</div>'
+                . '</div>'
+            . '</div>',
+            $id,
+            $modalHeader
+            );
+    }
 
     /**
      * 
      * @param type $navigations
-     * @param type $parameters
+     * @param type $externalParam
      * @return type
      * @throws \Exception
      */
-    public function breadcrumb($navigations ,$parameters = array())
+    public function breadcrumb(array $navigations, $externalParam = array())
     {
-        $defaultParameters = array(
-            'class' => '',
-            'attr' => null
-        );
-        $parameters = array_merge($defaultParameters, $parameters);
-        
-        $attrContent = '';
-        if (null !== $parameters['attr']) {
-            foreach ($parameters['attr'] as $key => $value) {
-                $attrContent = $attrContent . ' ' . $key . '"' . $value . '"';
-            }
-        }
-        
-        if (!is_array($navigations)) {
-            throw new \Exception('You should provide an array of navigation items');
-        }
+        $param = array_merge(
+            array(
+                'class' => '',
+                'id' => null,
+                'attr' => null
+                ), 
+            $externalParam
+            );
         
         $breadcrumbItemsContent = '';
-        foreach ($navigations as $key => $navigation) {
-            $defaultNavigationParameters = array(
-                'class' => '',
-                'url' => null,
-                'text' => 'NULL',
-                'attr' => null,
-                'action' => null,
-                'icon' => null,
-                'active' => false
-            );
-            $navigationParameters = array_merge($defaultNavigationParameters, $navigation);
+        foreach ($navigations as $navigationParam) {
+            $navigationParam = array_merge(
+                array(
+                    'class' => '',
+                    'url' => null,
+                    'text' => 'NULL',
+                    'attr' => null,
+                    'action' => null,
+                    'icon' => null,
+                    'active' => false
+                    ), 
+                $navigationParam
+                );
             
-            $itemAttrContent = '';
-            if (null !== $navigationParameters['attr']) {
-                foreach ($navigationParameters['attr'] as $key => $value) {
-                    $itemAttrContent = $itemAttrContent . ' ' . $key . '"' . $value . '"';
-                }
-            }  
-            
-            $itemIconContent = '';
-            if (null !== $navigationParameters['icon']) {
-                $itemIconContent = sprintf(
-                    self::ICON_TEMPLATE . ' ', 
-                    $this->translator->trans($navigationParameters['icon'])
-                    );
-            }
-            
-            if (null !== $navigationParameters['action']) {
-                $attrUrlContent = '';
-                if (null !== $navigationParameters['url']) {
-                    $attrUrlContent = sprintf(
-                        'data-url="%s"', 
-                        $navigationParameters['url']
-                        );
-                }
-                
+            if (null !== $navigationParam['action']) {
                 $breadcrumbItemsContent = $breadcrumbItemsContent . sprintf(
-                    self::BREADCRUMB_JS_ACTION_ITEM_TEMPLATE, 
-                    $attrUrlContent,
-                    $navigationParameters['class'],
-                    $navigationParameters['action'],
-                    $itemAttrContent,
-                    $itemIconContent,
-                    $this->translator->trans($navigationParameters['text'])
+                    '<li><a href="#" %s class="%s %s" %s>%s%s</a></li>', 
+                    $this->getUrl($navigationParam['url']),
+                    $navigationParam['class'],
+                    $navigationParam['action'],
+                    $this->getAttr($navigationParam['attr']),
+                    $this->getIcon($navigationParam['icon']),
+                    $this->translator->trans($navigationParam['text'])
                     );
-            } elseif ($navigationParameters['active'] or null === $navigationParameters['url']) {
+            } elseif ($navigationParam['active'] or null === $navigationParam['url']) {
                 $breadcrumbItemsContent = $breadcrumbItemsContent . sprintf(
-                    self::BREADCRUMB_TEXT_ITEM_TEMPLATE, 
-                    $itemIconContent,
-                    $this->translator->trans($navigationParameters['text'])
+                    '<li class="active">%s%s</li>', 
+                    $this->getIcon($navigationParam['icon']),
+                    $this->translator->trans($navigationParam['text'])
                     );
             } else {
                 $breadcrumbItemsContent = $breadcrumbItemsContent . sprintf(
-                    self::BREADCRUMB_LINK_ITEM_TEMPLATE, 
-                    $navigationParameters['url'],
-                    $navigationParameters['class'],
-                    $itemAttrContent,
-                    $itemIconContent,
-                    $this->translator->trans($navigationParameters['text'])
+                    '<li><a href="%s" class="%s" %s>%s%s</a></li>', 
+                    $navigationParam['url'],
+                    $navigationParam['class'],
+                    $this->getAttr($navigationParam['attr']),
+                    $this->getIcon($navigationParam['icon']),
+                    $this->translator->trans($navigationParam['text'])
                     );
             }
         }
         
-        return sprintf(self::BREADCRUMB_TEMPLATE, $breadcrumbItemsContent);
+        return sprintf(
+            '<ol class="breadcrumb" %s>%s</ol>', 
+            $this->getAttr($param['attr']),
+            $breadcrumbItemsContent
+            );
     }
     
     /**
+     * externalParam:
+     *   {
+     *      url: string,
+     *      icon: string,
+     *      size: null|xs|sm|lg
+     *      class: string,
+     *      id: string, 
+     *      attr: {}
+     *   }
      * 
      * @param type $url
      * @param type $text
      * @param type $clientParameters
      * @return type
      */
-    public function link($text, $clientParameters = array())
+    public function link($text, $externalParam = array())
     {
-        $parameters = array_merge(
+        $param = array_merge(
             array(
                 'url' => null,
                 'icon' => null,
-                'size' => 'xs', // lg , no , sm, xs
+                'size' => 'xs',
                 'class' => '',
+                'id' => null,
                 'attr' => null
                 ), 
-            $clientParameters
+            $externalParam
             );
         
-        $sizeContent = 'btn-' . $parameters['size'];
-        if ('no' === $parameters['size']) {
-            $sizeContent = '';
-        }
-        
-        $iconContent = '';
-        if (null !== $parameters['icon']) {
-            $iconContent = sprintf(
-                self::ICON_TEMPLATE . ' ', 
-                $this->translator->trans($parameters['icon'])
-                );
-        }
-        
-        $attrContent = '';
-        if (null !== $parameters['attr']) {
-            foreach ($parameters['attr'] as $key => $value) {
-                $attrContent = $attrContent . ' ' . $key . '="' . $value . '"';
-            }
-        }
-        
-        $linkText = (null === $text)? '' : $this->translator->trans($text);
-        
         return sprintf(
-            self::LINK_TEMPLATE, 
-            $parameters['url'],
-            $sizeContent,
-            $parameters['class'],
-            $attrContent,
-            $iconContent,
-            $linkText
+            '<a %s href="%s" class="%s %s" %s>%s%s</a>', 
+            $this->getId($param['id']),
+            $param['url'],
+            $this->getBtnSize($param['size']),
+            $param['class'],
+            $this->getAttr($param['attr']),
+            $this->getIcon($param['icon']),
+            $this->translator->trans($text)
             );
     }
     
     /**
+     * externalParam:
+     *   {
+     *      url: string,
+     *      icon: string,
+     *      size: null|xs|sm|lg
+     *      toggle: string,
+     *      action: string,
+     *      class: string,
+     *      type: default|primary|success|info|warning|danger|link
+     *      id: string,
+     *      attr: {}
+     *   }
      * 
      * @param type $url
      * @param type $text
      * @param type $clientParameters
      * @return type
      */
-    public function button($text, $clientParameters = array())
+    public function button($text, $externalParam = array())
     {
-        $parameters = array_merge(
+        $param = array_merge(
             array(
                 'url' => null,
                 'icon' => null,
-                'size' => null, //('xs', 'sm', 'lg')
-                'toggleModal' => null,
+                'size' => null,
+                'target' => null,
                 'action' => '',
                 'class' => '',
                 'type' => 'link',
                 'id' => null,
-                'attr' => null
+                'attr' => array()
                 ), 
-            $clientParameters
+            $externalParam
             );
-        
-        $urlContent = '';
-        if (null !== $parameters['url']) {
-            $urlContent = sprintf(
-                'data-url="%s"', 
-                $parameters['url']
-                );
-        }
-        
-        $size = '';
-        if (null !== $parameters['size']) {
-            $size = sprintf('btn-%s', $parameters['size']);
-        }
-        
-        $toggleModal = '';
-        if (null !== $parameters['toggleModal']) {
-            $toggleModal = sprintf(
-                'data-target="#%s"', 
-                // We dont use this any more. We toggle modal in js manually
-                //'data-toggle="modal" data-target="#%s"', 
-                $parameters['toggleModal']
-                );
-        }
-        
-        $icon = '';
-        if (null !== $parameters['icon']) {
-            $icon = sprintf(
-                self::ICON_TEMPLATE . ' ', 
-                $this->translator->trans($parameters['icon'])
-                );
-        }
-        
-        $attr = '';
-        if (null !== $parameters['attr']) {
-            foreach ($parameters['attr'] as $key => $value) {
-                $attr = $attr . ' ' . $key . '="' . $value . '"';
-            }
-        }
-        
-        $id = '';
-        if (null !== $parameters['id']) {
-            $id = sprintf('id="%s"', $parameters['id']);
-        }
-        
-        return sprintf(
-            self::BUTTON_TEMPLATE, 
-            $urlContent,
-            $id,
-            $parameters['type'],
-            $size,
-            $parameters['class'],
-            $parameters['action'],
-            $toggleModal,
-            $attr,
-            $icon,
+
+        return sprintf(''
+            . '<button %s %s type="button" class="btn btn-%s %s %s %s" %s %s>'
+                . '%s<span class="hidden-sm hidden-xs">%s</span>'
+            . '</button>', 
+            $this->getUrl($param['url']),
+            $this->getId($param['id']),
+            $param['type'],
+            $this->getBtnSize($param['size']),
+            $param['class'],
+            $param['action'],
+            $this->getTarget($param['target']),
+            $this->getAttr($param['attr']),
+            $this->getIcon($param['icon']),
             $this->translator->trans($text)
             );
     }
@@ -295,5 +280,106 @@ class TwigFunctionExtension extends Twig_Extension
     public function getName()
     {
         return 'app.twig.function.service';
+    }
+    
+    /**
+     * 
+     * @param type $url
+     * @return type
+     */
+    private function getUrl($url)
+    {
+        $content = '';
+        if (null !== $url) {
+            $content = sprintf(
+                'data-url="%s"', 
+                $url
+                );
+        }
+        
+        return $content;
+    }
+    
+    /**
+     * 
+     * @param type $id
+     * @return type
+     */
+    private function getId($id)
+    {
+        $content = '';
+        if (null !== $id) {
+            $content = sprintf('id="%s"', $id);
+        }
+        
+        return $content;
+    }
+    
+    /**
+     * 
+     * @param type $icon
+     * @return type
+     */
+    private function getIcon($icon)
+    {
+        $content = '';
+        if (null !== $icon) {
+            $content = sprintf(
+                '<span class="%s"></span> ', 
+                $this->translator->trans($icon)
+                );
+        }
+        
+        return $content;
+    }
+    
+    /**
+     * 
+     * @param type $attr
+     * @return string
+     */
+    private function getAttr($attr)
+    {
+        $content = '';
+        if (is_array($attr)) {
+            foreach ($attr as $key => $value) {
+                $content = $content . sprintf(' %s="%s"', $key, $value);
+            }
+        }
+        
+        return $content;
+    }
+    
+    /**
+     * 
+     * @param type $size
+     * @return type
+     */
+    private function getBtnSize($size)
+    {
+        $content = '';
+        if (null !== $size) {
+            $content = sprintf('btn-%s', $size);
+        }
+        
+        return $content;
+    }
+    
+    /**
+     * 
+     * @param type $target
+     * @return type
+     */
+    private function getTarget($target)
+    {
+        $content = '';
+        if (null !== $target) {
+            $content = sprintf(
+                'data-target="#%s"', 
+                $target
+                );
+        }
+        
+        return $content;
     }
 }

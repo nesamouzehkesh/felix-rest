@@ -2,6 +2,7 @@
 
 namespace AppBundle\Service;
 
+use Exception;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Translation\Translator;
@@ -301,9 +302,16 @@ class AppService extends BaseService
         $response['success'] = $success;
         $response['message'] = $this->transMessage($messageId);
         
+        // Get debug parameter injected to this service, if no debug parameter 
+        // is defined the false value will be selected
+        $debug = $this->getParameter('debug', false);
         // If the exception is instace of AppException then we will display it
-        if ($ex instanceof AppException) {
-            $response['message'] = sprintf('%s [%s]', $response['message'], $ex->getMessage());
+        if ($ex instanceof Exception && ($debug || $ex instanceof AppException)) {
+            $response['message'] = sprintf(
+                '%s [%s]', 
+                $response['message'], 
+                $ex->getMessage()
+                );
         }
         
         // Set jason contet if it is provide

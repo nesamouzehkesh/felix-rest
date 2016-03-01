@@ -1,7 +1,7 @@
 {% extends "::base.html.twig" %}
 
 {% block header %}
-    <a href="{{ path('page_admin_add') }}" class="btn btn-primary" class="btn">Add New Page</a>
+    <a href="{{ path('admin_page_add') }}" class="btn btn-primary" class="btn">Add New Page</a>
 {% endblock %}
 
 {% block body %}
@@ -24,11 +24,11 @@
                 <td>{{ page.url }}</td>
                 <td>
                     <div class="pull-right">
-                        <a href="{{ path('page_admin_edit', {'id': page.id }) }}">
+                        <a href="{{ path('admin_page_edit', {'id': page.id }) }}">
                             {{ 'icon.edit'|icon }} {{ 'action.edit'|trans }}
                         </a>
                         
-                        <a href="{{ path('page_admin_delete', {'id': page.id }) }}">
+                        <a href="{{ path('admin_page_delete', {'id': page.id }) }}">
                             {{ 'icon.delete'|icon }} {{ 'action.delete'|trans }}
                         </a>
                     </div>  

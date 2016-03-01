@@ -17,7 +17,7 @@ class UserAdminController extends BaseController
      * @param \Symfony\Component\HttpFoundation\Request $request
      * @return type
      * 
-     * @Route("/", name="user_admin_index")
+     * @Route("/", name="admin_user_index")
      */
     public function indexAction()
     {
@@ -39,14 +39,14 @@ class UserAdminController extends BaseController
     /**
      * 
      * @return type
-     * @Route("/myprofile", name="user_admin_myprofile")
+     * @Route("/myprofile", name="admin_user_myprofile")
      */
     public function myprofileAction()
     {
         $user = $this->getUser();
         
         return $this->render(
-            'UserBundle:User:myprofile.html.twig', 
+            '::admin/user/myprofile.html.twig', 
             array('user' => $user)
             );
     }
@@ -56,25 +56,26 @@ class UserAdminController extends BaseController
      * 
      * @param type $userId
      * @return type
-     * @Route("/view/user{userId}", name="user_admin_view")
+     * @Route("/view/user{userId}", name="admin_user_view")
      */
     public function viewUserAction($userId)
     {
         try {
-            // Get ObjectManager
+            // Get User object
             $user = $this->getUserService()->getUser($userId);
-            $userActivities = $this->getUserService()->getUserActivities($user);
 
+            // Generate a view 
             $view = $this->renderView(
-                'UserBundle:User:user.html.twig',
+                '::admin/user/user.html.twig',
                 array(
                     'user' => $user,
-                    'userActivities' => $userActivities
                     )
                 );
-
+            
+            // Returning a Jason response
             return $this->getAppService()->getJsonResponse(true, null, $view);        
         } catch (\Exception $ex) {
+            // Catch Exceptions and return Json Exception Response
             return $this->getAppService()->getExceptionResponse(
                 'Can not display this user', 
                 $ex
@@ -87,8 +88,8 @@ class UserAdminController extends BaseController
      * 
      * @param \Symfony\Component\HttpFoundation\Request $request
      * @return type
-     * @Route("/edit/user/{userId}", name="user_admin_edit")
-     * @Route("/add/user", name="user_admin_add", defaults={"id" = null})
+     * @Route("/edit/user/{userId}", name="admin_user_edit")
+     * @Route("/add/user", name="admin_user_add", defaults={"id" = null})
      */
     public function addEditUserAction(Request $request, $userId = null)
     {
@@ -99,7 +100,7 @@ class UserAdminController extends BaseController
             
             // Generate User Form
             $userForm = $this->createForm(
-                new UserType, 
+                UserType::class, 
                 $user,
                 array(
                     'action' => $request->getUri(),
@@ -110,6 +111,7 @@ class UserAdminController extends BaseController
             $userForm->handleRequest($request);
             // If form is submited and it is valid then add or update this $user
             if ($userForm->isValid()) {
+                // Best practice is to return a form with error
                 $result = $this->userFormIsValid($userForm);
                 if (true !== $result) {
                     return $this->getAppService()->getJsonResponse(false, $result);
@@ -121,16 +123,19 @@ class UserAdminController extends BaseController
 
                 return $this->getAppService()->getJsonResponse(true);
             }
-
+            
+            // Generate a view 
             $view = $this->renderView(
-                'UserBundle:User:addEditUser.html.twig', 
+                '::admin/user/addEditUser.html.twig', 
                 array(
                     'form' => $userForm->createView(),
                     )
                 );
-
+            
+            // Returning a Jason response
             return $this->getAppService()->getJsonResponse(true, null, $view);
         } catch (\Exception $ex) {
+            // Catch Exceptions and return Json Exception Response
             return $this->getAppService()->getExceptionResponse(
                 'Can not add or edit user', 
                 $ex
@@ -143,7 +148,7 @@ class UserAdminController extends BaseController
      * 
      * @param type $userId
      * @return type
-     * @Route("/delete/{userId}", name="user_admin_delete")
+     * @Route("/delete/{userId}", name="admin_user_delete")
      */
     public function deleteUserAction($userId)
     {
@@ -175,14 +180,9 @@ class UserAdminController extends BaseController
      */
     private function userFormIsValid(Form $userForm)
     {
-        $em = $this->appService->getEntityManager();
+        $em = $this->getAppService()->getEntityManager();
         $user = $userForm->getData();
         $userName = $user->getUsername();
-        
-        // Check the username
-        if (!preg_match("/^[a-zA-Z ]*$/", $userName)) {
-            return "Only letters and white space allowed";
-        }
 
         // Check the username
         if (!User::getRepository($em)->canUserUseUsername($user, $userName)) {

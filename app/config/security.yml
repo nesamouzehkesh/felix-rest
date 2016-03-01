@@ -21,11 +21,11 @@ security:
             anonymous: ~
             provider: administrators
             form_login:
-                login_path: app_login
-                check_path: app_login_check
+                login_path: admin_login
+                check_path: admin_login_check
             logout:
-                path:   app_logout
-                target: app_login
+                path:   admin_logout
+                target: admin_login
                 
         secured_area_web:
             #pattern:   ^/shopping|/media|/

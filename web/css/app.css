@@ -126,11 +126,9 @@ body {
 #main-sidebar .footer {
     padding-top: 10px;
     padding-left: 25px;
-    background-color: #2c3849;
     height: 70px;
     position: fixed;
     bottom: 0;
-    width: 100%;    
 }
 #main-sidebar .header {
     padding-top: 10px;

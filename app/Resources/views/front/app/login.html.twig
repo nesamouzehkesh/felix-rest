@@ -28,8 +28,7 @@
                     </label>
                 </div>
                 #}
-                {#<button id="form-submit-login" class="btn btn-primary ladda-button" type="submit" data-style="expand-left"><span class="ladda-label">{{ 'word.logIn'|trans }}</span></button>#}
-                <button class="btn btn-primary hidden-xs form-submit-login" type="submit" style="padding-left: 20px; padding-right: 20px;"><span>{{ 'word.logIn'|trans }}</span></button>
+                <button class="btn btn-primary hidden-xs form-submit-login" type="submit" style="padding-left: 20px; padding-right: 20px;">{{ 'word.logIn'|trans }}</button>
                 <a class="hidden-xs margin-left-10" id="createAccount" href="{{ path('saman_shopping_customer_joinus') }}">{{ 'word.createAccount'|trans }}</a>
 
                 <button class="btn btn-primary btn-block visible-xs form-submit-login" type="submit"><span>{{ 'word.logIn'|trans }}</span></button>
@@ -55,15 +54,6 @@
                     button.addClass('disabled btn-loading');
                 }
             });
-            {#
-            Ladda.stopAll();
-            $('#form-submit-login').click(function(e){
-                var form = $(this).closest('form');
-                if (!form.isValid()) {
-                    Ladda.stopAll();
-                }
-            });
-            #}
         });
     </script>
 {% endblock %}

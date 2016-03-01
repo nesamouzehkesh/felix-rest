@@ -9,7 +9,7 @@ use AppBundle\Library\Base\BaseController;
 class PageFrontController extends BaseController
 {
     /**
-     * @Route("/", name="page_front_index")
+     * @Route("/", name="front_page_index")
      */
     public function indexAction(Request $request)
     {

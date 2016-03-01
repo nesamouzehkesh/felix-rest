@@ -15,6 +15,7 @@ parameters:
     app_paginateLimit: 10
     
     app_service_params:
+        debug: true
         paginateLimit: %app_paginateLimit%
     
 # Symfony framework main configurations
@@ -56,9 +57,9 @@ twig:
             app:
                 modules:
                     page: 
-                        route: page_admin_index
+                        route: admin_page_index
                     user: 
-                        route: user_admin_index
+                        route: admin_user_index
 
 # Doctrine configurations
 # Its prize projects are an object-relational mapper (ORM) and the database 
