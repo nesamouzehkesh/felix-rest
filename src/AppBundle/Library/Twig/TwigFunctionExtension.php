@@ -6,8 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 use \Twig_Extension;
 
 /**
- *
- * @author Saman Shafigh - samanshafigh@gmail.com
+ * TwigFunctionExtension
  */
 class TwigFunctionExtension extends Twig_Extension
 {
@@ -78,7 +77,7 @@ class TwigFunctionExtension extends Twig_Extension
         if (null !== $param['title']) {
             $title = sprintf(
                 '<h4 class="modal-title" id="myModalLabel">%s%s</h4>',
-                $this->getIcon($param['icon']),
+                $this->render('icon', $param['icon']),
                 $param['title']
                 );
         }
@@ -146,17 +145,17 @@ class TwigFunctionExtension extends Twig_Extension
             if (null !== $navigationParam['action']) {
                 $breadcrumbItemsContent = $breadcrumbItemsContent . sprintf(
                     '<li><a href="#" %s class="%s %s" %s>%s%s</a></li>', 
-                    $this->getUrl($navigationParam['url']),
+                    $this->render('url', $navigationParam['url']),
                     $navigationParam['class'],
                     $navigationParam['action'],
-                    $this->getAttr($navigationParam['attr']),
-                    $this->getIcon($navigationParam['icon']),
+                    $this->render('attr', $navigationParam['attr']),
+                    $this->render('icon', $navigationParam['icon']),
                     $this->translator->trans($navigationParam['text'])
                     );
             } elseif ($navigationParam['active'] or null === $navigationParam['url']) {
                 $breadcrumbItemsContent = $breadcrumbItemsContent . sprintf(
                     '<li class="active">%s%s</li>', 
-                    $this->getIcon($navigationParam['icon']),
+                    $this->render('icon', $navigationParam['icon']),
                     $this->translator->trans($navigationParam['text'])
                     );
             } else {
@@ -164,8 +163,8 @@ class TwigFunctionExtension extends Twig_Extension
                     '<li><a href="%s" class="%s" %s>%s%s</a></li>', 
                     $navigationParam['url'],
                     $navigationParam['class'],
-                    $this->getAttr($navigationParam['attr']),
-                    $this->getIcon($navigationParam['icon']),
+                    $this->render('attr', $navigationParam['attr']),
+                    $this->render('icon', $navigationParam['icon']),
                     $this->translator->trans($navigationParam['text'])
                     );
             }
@@ -173,7 +172,7 @@ class TwigFunctionExtension extends Twig_Extension
         
         return sprintf(
             '<ol class="breadcrumb" %s>%s</ol>', 
-            $this->getAttr($param['attr']),
+            $this->render('attr', $param['attr']),
             $breadcrumbItemsContent
             );
     }
@@ -200,8 +199,9 @@ class TwigFunctionExtension extends Twig_Extension
             array(
                 'url' => null,
                 'icon' => null,
-                'size' => 'xs',
+                'size' => null,
                 'class' => '',
+                'type' => 'link',
                 'id' => null,
                 'attr' => null
                 ), 
@@ -209,13 +209,14 @@ class TwigFunctionExtension extends Twig_Extension
             );
         
         return sprintf(
-            '<a %s href="%s" class="%s %s" %s>%s%s</a>', 
-            $this->getId($param['id']),
+            '<a %s href="%s" class="btn %s%s %s" %s>%s%s</a>', 
+            $this->render('id', $param['id']),
             $param['url'],
-            $this->getBtnSize($param['size']),
+            $this->render('btnType', $param['type']),
+            $this->render('btnSize', $param['size']),
             $param['class'],
-            $this->getAttr($param['attr']),
-            $this->getIcon($param['icon']),
+            $this->render('attr', $param['attr']),
+            $this->render('icon', $param['icon']),
             $this->translator->trans($text)
             );
     }
@@ -257,18 +258,18 @@ class TwigFunctionExtension extends Twig_Extension
             );
 
         return sprintf(''
-            . '<button %s %s type="button" class="btn btn-%s %s %s %s" %s %s>'
+            . '<button %s %s type="button" class="btn %s %s %s %s" %s %s>'
                 . '%s<span class="hidden-sm hidden-xs">%s</span>'
             . '</button>', 
-            $this->getUrl($param['url']),
-            $this->getId($param['id']),
-            $param['type'],
-            $this->getBtnSize($param['size']),
+            $this->render('url', $param['url']),
+            $this->render('id', $param['id']),
+            $this->render('btnType', $param['type']),
+            $this->render('btnSize', $param['size']),
             $param['class'],
             $param['action'],
-            $this->getTarget($param['target']),
-            $this->getAttr($param['attr']),
-            $this->getIcon($param['icon']),
+            $this->render('target', $param['target']),
+            $this->render('attr', $param['attr']),
+            $this->render('icon', $param['icon']),
             $this->translator->trans($text)
             );
     }
@@ -284,102 +285,36 @@ class TwigFunctionExtension extends Twig_Extension
     
     /**
      * 
-     * @param type $url
-     * @return type
-     */
-    private function getUrl($url)
-    {
-        $content = '';
-        if (null !== $url) {
-            $content = sprintf(
-                'data-url="%s"', 
-                $url
-                );
-        }
-        
-        return $content;
-    }
-    
-    /**
-     * 
-     * @param type $id
-     * @return type
-     */
-    private function getId($id)
-    {
-        $content = '';
-        if (null !== $id) {
-            $content = sprintf('id="%s"', $id);
-        }
-        
-        return $content;
-    }
-    
-    /**
-     * 
-     * @param type $icon
-     * @return type
-     */
-    private function getIcon($icon)
-    {
-        $content = '';
-        if (null !== $icon) {
-            $content = sprintf(
-                '<span class="%s"></span> ', 
-                $this->translator->trans($icon)
-                );
-        }
-        
-        return $content;
-    }
-    
-    /**
-     * 
-     * @param type $attr
+     * @param type $type
+     * @param type $value
      * @return string
      */
-    private function getAttr($attr)
+    private function render($type, $value)
     {
-        $content = '';
-        if (is_array($attr)) {
-            foreach ($attr as $key => $value) {
-                $content = $content . sprintf(' %s="%s"', $key, $value);
-            }
+        if (null === $value) {
+            return '';
         }
         
-        return $content;
-    }
-    
-    /**
-     * 
-     * @param type $size
-     * @return type
-     */
-    private function getBtnSize($size)
-    {
-        $content = '';
-        if (null !== $size) {
-            $content = sprintf('btn-%s', $size);
+        switch ($type) {
+            case 'target':
+                return sprintf(' data-target="#%s"', $value);
+            case 'btnType':
+            case 'btnSize':
+                return sprintf(' btn-%s', $value);
+            case 'attr':
+                $content = '';
+                foreach ($value as $key => $value) {
+                    $content = $content . sprintf(' %s="%s"', $key, $value);
+                }
+                return $content;
+            case 'icon':
+                return sprintf('<span class="%s"></span> ', $this->translator->trans($value));
+            case 'id': 
+                return sprintf(' id="%s"', $value);
+            case 'url':
+                return sprintf(' data-url="%s"', $value);
         }
         
-        return $content;
-    }
-    
-    /**
-     * 
-     * @param type $target
-     * @return type
-     */
-    private function getTarget($target)
-    {
-        $content = '';
-        if (null !== $target) {
-            $content = sprintf(
-                'data-target="#%s"', 
-                $target
-                );
-        }
-        
-        return $content;
+        return '';
     }
 }

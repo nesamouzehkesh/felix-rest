@@ -11,7 +11,6 @@ word:
     columnNumber: "Column %number%"
     on: On
     off: Off
-    uploadFileByDropping: "Drop files here or click to upload"
     selectAnItem: Select an item
     warning: Warning
     signedInAs: Signed in as
@@ -42,9 +41,6 @@ alert:
     warning:
         doYouWantToDeleteItem: "Do your really want to delete this item?"
         
-message:
-    signUpMessage: "The customised nature and individuality of our carpets means that we need to know more about every customer. Please sign in or create an account before making an order so you can specify your carpet as you personally desire and track its progress while it’s being made for you. Thanks!"
-
 action:
     logout: Sign out
     addFiles: Add files...
@@ -70,6 +66,7 @@ icon:
     arrowUp: glyphicon glyphicon-chevron-up
     arrowDown: glyphicon glyphicon-chevron-down
     admin: glyphicon glyphicon-cog
+    dashboard: glyphicon glyphicon-dashboard
     user: glyphicon glyphicon-user
     page: glyphicon glyphicon-list
     add: glyphicon glyphicon-plus
@@ -120,22 +117,17 @@ icon:
 
 
 form:
-    felix_label_form:
-        title: Label
-        icon: glyphicon glyphicon-tags
-        description: "You can create new label or edit your existing label in this form"
     felix_page_form:
         title: Page
         icon: glyphicon glyphicon-th-large
         description: "You can create new page or edit your existing page in this form"
 
 
-
-module: 
-    label:
-        title: Label
-        description: "Edit your profile, update your username and password, and manage other account settings."
-        icon: glyphicon glyphicon-tags
+module:
+    dashboard:
+        title: Dashboard
+        description: ""
+        icon: glyphicon glyphicon-dashboard
     page:
         title: Pages
         description: "Edit your profile, update your username and password, and manage other account settings."
@@ -144,15 +136,3 @@ module:
         title: Users
         description: "Edit your profile, update your username and password, and manage other account settings."
         icon: glyphicon glyphicon-user
-    product:
-        title: Product
-        description: "Edit your profile, update your username and password, and manage other account settings."
-        icon: glyphicon glyphicon-shopping_bag
-    playground:
-        title: Playground
-        description: "Edit your profile, update your username and password, and manage other account settings."
-        icon: glyphicon glyphicon-star
-    order:
-        title: Orders
-        description: "Edit your profile, update your username and password, and manage other account settings."
-        icon: glyphicon glyphicon-shopping-cart

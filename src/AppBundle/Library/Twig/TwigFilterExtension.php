@@ -6,14 +6,10 @@ use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 use \Twig_Extension;
 
 /**
- *
- * @author nesa mouzehkesh
+ * TwigFilterExtension
  */
 class TwigFilterExtension extends Twig_Extension
 {
-    const ICON_TEMPLATE = '<span class="%s %s"></span>';
-    const ALERT_TEMPLATE = '<div class="alert alert-%s alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>%s</div>';
-        
     /** 
      * 
      * @var Translator  
@@ -63,7 +59,7 @@ class TwigFilterExtension extends Twig_Extension
     public function icon($icon, $extraClass = '')
     {
         return sprintf(
-            self::ICON_TEMPLATE, 
+            '<span class="%s %s"></span>', 
             $this->translator->trans($icon), 
             $extraClass
             );
@@ -96,8 +92,12 @@ class TwigFilterExtension extends Twig_Extension
      */
     public function showAlert($alert, $alertType)
     {
-        return sprintf(
-            self::ALERT_TEMPLATE, 
+        return sprintf(''
+            . '<div class="alert alert-%s alert-dismissible" role="alert">'
+                . '<button type="button" class="close" data-dismiss="alert">'
+                    . '<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>'
+                . '</button>%s'
+            . '</div>', 
             $alertType, 
             $this->translator->trans($alert)
             );

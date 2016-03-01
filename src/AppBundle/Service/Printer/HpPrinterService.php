@@ -1,6 +1,5 @@
 <?php
 
-
 namespace AppBundle\Service\Printer;
 
 /**
@@ -10,13 +9,8 @@ namespace AppBundle\Service\Printer;
  */
 class HpPrinterService 
 {  
-
-        public function printText($text)
-            {
-                
-            return $text . ' printed by: HP printer';
-            
-            
-            }
+    public function printText($text)
+    {
+        return $text . ' printed by: HP printer';
+    }
 }
-

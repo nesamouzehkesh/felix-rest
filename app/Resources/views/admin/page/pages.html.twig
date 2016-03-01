@@ -24,13 +24,19 @@
                 <td>{{ page.url }}</td>
                 <td>
                     <div class="pull-right">
-                        <a href="{{ path('admin_page_edit', {'id': page.id }) }}">
-                            {{ 'icon.edit'|icon }} {{ 'action.edit'|trans }}
-                        </a>
-                        
-                        <a href="{{ path('admin_page_delete', {'id': page.id }) }}">
-                            {{ 'icon.delete'|icon }} {{ 'action.delete'|trans }}
-                        </a>
+                        {{ link(
+                            'action.edit', 
+                            {
+                                url: path('admin_page_edit', {'id': page.id }),
+                                icon: 'icon.edit', 
+                            }) }}   
+                            
+                        {{ link(
+                            'action.delete', 
+                            {
+                                url: path('admin_page_delete', {'id': page.id }),
+                                icon: 'icon.delete', 
+                            }) }}                        
                     </div>  
                 </td>
             </tr>

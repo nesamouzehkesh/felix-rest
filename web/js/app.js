@@ -3453,34 +3453,7 @@ $(document).ready(function(){
             $('#main-sidebar-toggle').removeClass('sidebar-toggle-close').addClass('sidebar-toggle-open');
         }
     });
-    
-    /* Display Selected Item in Bootstrap Button Dropdown Title */
-    $(".action-delete").click(function(e){
-        e.preventDefault();
-        var messageDeleteItem = 'Do your really want to delete this order?';
-        var deleteActionUrl = $(this).attr('href');
-        bootbox.confirm(messageDeleteItem, function(result) {
-            if (result) {
-                $.post(deleteActionUrl, function(response) {
-                    if (response.success === true) {
-                        location.reload();
-                    } else {
-                        bootbox.alert(response.message);
-                    }
-                }, 'json');
-            } else {
-                return true;
-            }
-        });
 
-    });  
-    
-    /* Display Selected Item in Bootstrap Button Dropdown Title */
-    $(".dropdown-menu li a").click(function(){
-      $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
-      $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
-    });  
-    
     /* Set Search type */
     $('.action-set-search-type').click(function(e){
         var searchTarget = $(this).attr('data-search-target');
@@ -3496,23 +3469,6 @@ $(document).ready(function(){
 $.fn.isValid = function(){
     return this[0].checkValidity();
 };
-
-function getPaht(url, param)
-{
-    var queryString = '';
-    $.each(param, function( key, value ) {
-        if (value !== undefined) {
-            queryString = queryString + '&' + key + '=' + value;
-        }
-    });
-    return url + queryString;
-}
-
-// activate the tooltip    
-function fireTooltip(itemId)
-{
-    $('#' + itemId).tooltip({ selector: '[data-toggle="tooltip"]' });
-}
 
 function searchItems(searchInput, url_items, cont_items, currentPage)
 {
@@ -3579,50 +3535,6 @@ function displayItem(button)
     }
 }  
 
-function displayItems(url, cont_items, page)
-{
-    var searchText = $("#input-search").val();
-    var param;
-    if ('' !== searchText) {
-        var searchTarget = $("#input-search").attr('data-search-target');
-        var searchType = $("#input-search").attr('data-search-type');
-        if (searchTarget !== undefined) {
-            if (searchType !== undefined) {
-                param = {searchText: searchText, searchTarget: searchTarget, searchType: searchType, page: page};
-            } else {
-                param = {searchText: searchText, searchTarget: searchTarget, page: page};
-            }
-        } else {
-            param = {searchText: searchText, page: page};
-        }
-    } else {
-        param = {page: page};
-    }
-    loadingMessage(true, cont_items);
-    $.get(url, param, function(response) {
-        loadingMessage(false, cont_items);
-        if (response.success === true) {
-            cont_items.html(response.content);
-        } else {
-            bootbox.alert(response.message);
-        }
-    }, 'json'); 
-}
-
-function sortAble(sortContainer, callback) {
-    // Sortable actions   
-    sortContainer.sortable({
-        connectWith: '.d-sortable-connected',
-        dropOnEmpty: true,
-        update: function(event, ui) {
-            var sortIds = $(this).sortable('toArray').toString();
-            var url = $(this).attr('data-url');
-
-            simpleGet(url, {sortIds: sortIds}, callback);
-        }
-    });
-}
-
 function showModal(modal)
 {
     modal.modal('show');
@@ -3639,57 +3551,28 @@ function hideModal(modal)
 Display add/edit module form and returns the form as callback parameter if 
 form display correctly, prepare and handle the post action.
 */
-function handleForm(button, currentUrl, cont_items, currentPage, callback)
+function displayForm(button, callback)
 {
     var url = button.attr('data-url');
-    var formModal = $(button.attr('data-target'));
-    showModal(formModal);
+    var formContainer = $(button.attr('data-target'));
+    showModal(formContainer);
     
     $.get(url, function(response) {
         if (response.success === true) {
-            handleFormSubmission(response, formModal, currentUrl, cont_items, currentPage);
+            handleFormSubmission(response, formContainer);
             if (callback !== undefined) {
                 setTimeout(function() {      
-                    callback(formModal);
+                    callback(formContainer);
                 }, 300);
             }                 
         } else {
-            formModal.modal('hide');
+            formContainer.modal('hide');
             bootbox.alert(response.message);
         }
     }, 'json');
 }
 
-function simpleGet(url, param, callback) 
-{
-    $.get(url, param, function(response) {
-        if (response.success !== true) {
-            bootbox.alert(response.message);
-        }
-        if (callback !== undefined) {
-            setTimeout(function() {        
-                callback(response);
-            }, 300);                
-        }
-    }, 'json');
-}
-
-function actionLink(button)
-{
-    var url = button.attr('data-url');
-    location.href = url;
-}
-
-function loadingMessage(status, cont_items)
-{
-    if (true === status) {
-        cont_items.addClass("d-loading-background");
-    } else {
-        cont_items.removeClass("d-loading-background");
-    }
-}
-
-function handleFormSubmission(response, formContainer, currentUrl, cont_items, currentPage)
+function handleFormSubmission(response, formContainer)
 {
     // turn the whole html response into a jQuery object without inserting it 
     // into the DOM. This allows you to manipulate or look for specific elements 
@@ -3699,11 +3582,8 @@ function handleFormSubmission(response, formContainer, currentUrl, cont_items, c
     
     if(formContainer.find('.modal-body-content').length) {
         formContainer.find('.modal-body-content').html(response.content);
-        
         formContainer.find('.form-body').addClass('modal-body');
         formContainer.find('.form-footer').addClass('modal-footer');
-        
-        //formContainer.find('.modal-footer').html($content.find('.form-footer').html());
     } else {
         formContainer.html(response.content); 
     }
@@ -3714,15 +3594,10 @@ function handleFormSubmission(response, formContainer, currentUrl, cont_items, c
         submitForm($(this), function(response) {
             // If content has been defined then we display this form again, probably there is a form validation error
             if (response.content !== undefined) {
-                handleFormSubmission(response, formContainer, currentUrl, cont_items, currentPage);
+                handleFormSubmission(response, formContainer);
             } else {
                 if (response.success === true) {
-                    if (currentUrl === undefined || cont_items === undefined) {
-                        location.reload();
-                    } else {
-                        formContainer.modal('toggle');
-                        displayItems(currentUrl, cont_items, currentPage);
-                    }                    
+                    location.reload();
                 } else {
                     var formMessage = form.find('.form-message');
                     formMessage.html(getAlart(response.message, 'warning'));

@@ -1,10 +1,8 @@
 <?php
 
-
 namespace AppBundle\Service\Mailer;
 
 /**
- * 
  *
  * @author nesa
  */

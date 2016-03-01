@@ -1,5 +1,4 @@
 sudo composer install
-sudo mkdir ./var/media/
 sudo chmod -R 777 ./app/config/parameters.yml
 sudo chmod -R 777 ./var/logs
 sudo chmod -R 777 ./var/cache

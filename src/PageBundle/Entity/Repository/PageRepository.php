@@ -10,7 +10,6 @@ namespace PageBundle\Entity\Repository;
  */
 class PageRepository extends \Doctrine\ORM\EntityRepository
 {
-        
     /**
      * Get one or null pages
      * 

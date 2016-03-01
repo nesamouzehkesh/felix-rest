@@ -36,7 +36,9 @@ class DataFixtureCommand extends ContainerAwareCommand
         $dataFixture
             ->truncateEntities()
             ->loadUserRoles()
-            ->loadUsers();
+            ->loadUsers()
+            ->loadPages()
+            ;
         
         $output->writeln(sprintf(
             '<info>Data loaded successfully. Visit this page %s and login with "admin@admin.com" with password "admin"<info>', 

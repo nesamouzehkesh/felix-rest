@@ -8,12 +8,10 @@ use AppBundle\Library\Base\BaseController;
 class DashboardControllerController extends BaseController
 {
     /**
-     * @Route("/", name="nesa_app_display_dashboard")
+     * @Route("/", name="admin_app_dashboard")
      */    
     public function displayDashboardAction()
     {
-        /* echo $this->get('nesa.PrintService')->printText("This text is "); */
-               
         return $this->render(
             '::admin/app/dashboard.html.twig',
             array()
@@ -21,31 +19,25 @@ class DashboardControllerController extends BaseController
     }
     
     /**
-     * @Route("/mailer", name="nesa_app_display_dashboard_mailer")
+     * @Route("/app/mailer", name="admin_app_dashboard_mailer")
      */    
     public function MailerAction()
     {
         echo $this->get('app.mailer.service')->getMail("D620");
         $this->get('nesa.MailerService')->sendMail("nesa M", "Hello");
-            
-        return $this->render(
-            '::admin/app/dashboard.html.twig',
-            array()
-            );
+        
+        exit;
     }
     
     /**
-     * @Route("/logger", name="nesa_app_display_dashboard_logger")
+     * @Route("/app/logger", name="admin_app_dashboard_logger")
      */
     public function LoggerAction()
     {
         echo $this->get('app.logger.service')->logEvent("Critical", "Pending");
         $this->get('app.logger.service')->getEvent("11278");
         $this->get('app.logger.service')->showAllEvents("Critical");
-            
-        return $this->render(
-            '::admin/app/dashboard.html.twig',
-            array()
-            );
+        
+        exit;
     }
 }

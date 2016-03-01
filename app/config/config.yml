@@ -56,6 +56,8 @@ twig:
         twig:
             app:
                 modules:
+                    dashboard:
+                        route: admin_app_dashboard
                     page: 
                         route: admin_page_index
                     user: 

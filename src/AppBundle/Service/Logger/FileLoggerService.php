@@ -1,11 +1,9 @@
 <?php
 
-
 namespace AppBundle\Service\Logger;
 
 /**
  * 
- *
  * @author nesa
  */
 class FileLoggerService 

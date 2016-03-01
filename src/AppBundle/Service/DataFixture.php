@@ -7,15 +7,17 @@ use AppBundle\Service\AppService;
 use UserBundle\Entity\Address;
 use UserBundle\Entity\User;
 use UserBundle\Entity\Role;
+use PageBundle\Entity\Page;
 
 class DataFixture
 {
     private $data = array(
+        'pages' => 20,
         'roles' => array(
             array('name' => 'User', 'role' => Role::ROLE_USER),
             array('name' => 'Admin', 'role' => Role::ROLE_ADMIN),
         ),
-        'users' => 5,
+        'users' => 20,
         'usersData' => array(
             array(
                 'username' => 'admin@admin.com',
@@ -165,6 +167,34 @@ class DataFixture
         
         return $this;
     }
+    
+    /**
+     * 
+     */
+    public function loadPages()
+    {
+        $loremIpsum = new LoremIpsumGenerator();
+        $page = new Page();
+        $page->setTitle('Home Page');
+        $page->setContent($loremIpsum->getDescription());
+        $page->setUrl('');
+        $this->appService->getEntityManager()->persist($page);
+
+        for ($i = 0; $i < $this->data['pages']; $i++) {
+            $page = new Page();
+            $page->setTitle($loremIpsum->getTitle());
+            $page->setContent($loremIpsum->getDescription());
+            $page->setUrl($loremIpsum->getUrl(true));
+            /*
+            for ($j = 0; $j < rand(1 , count($this->labels)); $j++) {
+                $page->addLabel($this->labels[$j]);
+            }
+            */
+            $this->appService->getEntityManager()->persist($page);
+        }
+        
+        $this->appService->getEntityManager()->flush();
+    }    
     
     /**
      * Truncate all doctrine entities

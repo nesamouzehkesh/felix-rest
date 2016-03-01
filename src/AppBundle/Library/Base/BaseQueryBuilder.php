@@ -9,6 +9,10 @@ class BaseQueryBuilder extends QueryBuilder
 {
     const SEARCH_MAX_CHAR_TO_TRIGGER_SEARCH = 2;
     
+    /**
+     * 
+     * @param \Doctrine\ORM\EntityManager $em
+     */
     public function __construct(\Doctrine\ORM\EntityManager $em) {
         parent::__construct($em);
     }
