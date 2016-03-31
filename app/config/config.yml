@@ -52,16 +52,7 @@ framework:
 twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
-    globals:
-        twig:
-            app:
-                modules:
-                    dashboard:
-                        route: admin_app_dashboard
-                    page: 
-                        route: admin_page_index
-                    user: 
-                        route: admin_user_index
+    globals: ~
 
 # Doctrine configurations
 # Its prize projects are an object-relational mapper (ORM) and the database 
