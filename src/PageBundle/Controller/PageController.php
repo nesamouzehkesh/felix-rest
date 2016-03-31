@@ -9,6 +9,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use FOS\RestBundle\Controller\Annotations\Route;
 use AppBundle\Library\Base\BaseController;
 use PageBundle\Form\Type\PageType;
+use AppBundle\Library\Serializer\AngularSchemaFormSerializer\FormSerializer;
 
 class PageController extends BaseController
 {
@@ -100,28 +101,15 @@ class PageController extends BaseController
      *   }
      * )
      * 
-     * @return array
+     * @return string
      * @View()
      */
-    public function addAction(Request $request, $id)
+    public function getFormAction($id)
     {
-        // Get a page from page service. 
-        // If $id is null then it will returns a new page object
         $page = $this->get('app.page.service')->getPage($id);
-
         $form = $this->createForm(PageType::class, $page);
-        $form->handleRequest($request);
         
-        if ($form->isValid()) {
-            // Use saveEntity function in app.service to save this entity
-            $this->get('app.service')->saveEntity($page);
-            
-            return $this->redirectToRoute('admin_page_index');
-        }
-        
-        return $this->render('::admin/page/addEdit.html.twig', array(
-            'form' => $form->createView(),
-        ));
+        return FormSerializer::serialize($form);
     }
     
     /**
