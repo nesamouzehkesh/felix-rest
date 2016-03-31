@@ -42,7 +42,7 @@ framework:
         save_path:   "%kernel.root_dir%/../var/sessions/%kernel.environment%"
     fragments:       ~
     http_method_override: true
-    assets: ~
+    #assets: ~
 
 
 # Twig configurations
@@ -130,3 +130,25 @@ assetic:
     use_controller: '%kernel.debug%'
     filters:
         cssrewrite: ~        
+        
+## FOSRestBundle 
+#
+## http://symfony.com/doc/current/bundles/FOSRestBundle/configuration-reference.html        
+fos_rest:
+    param_fetcher_listener: true
+    body_listener: true
+    format_listener: true
+    view:
+        default_engine: twig
+        view_response_listener: force
+        formats:
+            xml: true
+            json : true
+        templating_formats:
+            html: true
+        force_redirects:
+            html: true
+        failed_validation: HTTP_BAD_REQUEST
+        
+    routing_loader:
+        default_format: json        
