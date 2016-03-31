@@ -18,13 +18,19 @@ class AppKernel extends Kernel
             // Installed third party bundles
             new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
             new Symfony\Bundle\AsseticBundle\AsseticBundle(),
+            // Installed third party Rest API bundles
+            new JMS\SerializerBundle\JMSSerializerBundle(),
+            new FOS\RestBundle\FOSRestBundle(),     
             // System bundles
             new AppBundle\AppBundle(),
-            new UserBundle\UserBundle(),
             new PageBundle\PageBundle(),
+            new UserBundle\UserBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
+            // Installed third party bundles
+            $bundles[] = new Nelmio\ApiDocBundle\NelmioApiDocBundle(); // For my api documenting
+            // End of Installed third party bundles
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
