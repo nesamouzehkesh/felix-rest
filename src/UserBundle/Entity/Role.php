@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use AppBundle\Library\Base\BaseEntity;
 
 /**
- * @ORM\Table(name="nesa_role")
+ * @ORM\Table(name="felix_user_role")
  * @ORM\Entity(repositoryClass="UserBundle\Entity\Repository\RoleRepository")
  */
 class Role extends BaseEntity implements RoleInterface

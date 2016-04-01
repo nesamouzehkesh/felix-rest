@@ -2,43 +2,33 @@
 
 namespace PageBundle\Controller;
 
-use Symfony\Component\HttpFoundation\Request;
-use FOS\RestBundle\Controller\Annotations\Delete;
-use FOS\RestBundle\Controller\Annotations\View;
+use FOS\RestBundle\Controller\Annotations;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use FOS\RestBundle\Controller\Annotations\Route;
+use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Library\Base\BaseController;
 use PageBundle\Form\Type\PageType;
 use AppBundle\Library\Serializer\AngularSchemaFormSerializer\FormSerializer;
 
+/**
+ * Getting Started With FOSRestBundle 
+ * http://symfony.com/doc/master/bundles/FOSRestBundle/index.html
+ * https://github.com/gimler/symfony-rest-edition/blob/2.7/src/AppBundle/Controller/NoteController.php
+ * 
+ */
 class PageController extends BaseController
 {
     /**
      * @ApiDoc(
      *   resource = true,
-     *   description = "Get all products",
-     *   requirements={
-     *     {
-     *       "name"="page",
-     *       "dataType"="integer",
-     *       "requirement"="\d+",
-     *       "description"="The page"
-     *     }
-     *   },
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     403 = "Returned when the product is not authorized to say hello",
-     *     404 = {
-     *       "Returned when the product is not found",
-     *       "Returned when something else is not found"
-     *     }
-     *   }
+     *   requirements={},
+     *   statusCodes = {}
      * )
      * 
+     * @Annotations\View()
+     * 
      * @return array
-     * @View()
      */
-    public function indexAction()
+    public function getPagesAction()
     {
         // Get a query of listing all pages from page service
         $pages = $this->get('app.page.service')->getPages(false);
@@ -49,29 +39,15 @@ class PageController extends BaseController
     /**
      * @ApiDoc(
      *   resource = true,
-     *   description = "Get all products",
-     *   requirements={
-     *     {
-     *       "name"="page",
-     *       "dataType"="integer",
-     *       "requirement"="\d+",
-     *       "description"="The page"
-     *     }
-     *   },
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     403 = "Returned when the product is not authorized to say hello",
-     *     404 = {
-     *       "Returned when the product is not found",
-     *       "Returned when something else is not found"
-     *     }
-     *   }
+     *   requirements={},
+     *   statusCodes = {}
      * )
      * 
+     * @Annotations\View()
+     * 
      * @return array
-     * @View()
      */ 
-    public function getAction($id)
+    public function getPageAction($id)
     {
         // Get a page from page service. 
         $page = $this->get('app.page.service')->getPage($id);
@@ -82,29 +58,15 @@ class PageController extends BaseController
     /**
      * @ApiDoc(
      *   resource = true,
-     *   description = "Get all products",
-     *   requirements={
-     *     {
-     *       "name"="page",
-     *       "dataType"="integer",
-     *       "requirement"="\d+",
-     *       "description"="The page"
-     *     }
-     *   },
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     403 = "Returned when the product is not authorized to say hello",
-     *     404 = {
-     *       "Returned when the product is not found",
-     *       "Returned when something else is not found"
-     *     }
-     *   }
+     *   requirements={},
+     *   statusCodes = {}
      * )
      * 
+     * @Annotations\View()
+     * 
      * @return string
-     * @View()
      */
-    public function getFormAction($id)
+    public function getPageFormAction($id)
     {
         $page = $this->get('app.page.service')->getPage($id);
         $form = $this->createForm(PageType::class, $page);
@@ -115,29 +77,15 @@ class PageController extends BaseController
     /**
      * @ApiDoc(
      *   resource = true,
-     *   description = "Get all products",
-     *   requirements={
-     *     {
-     *       "name"="page",
-     *       "dataType"="integer",
-     *       "requirement"="\d+",
-     *       "description"="The page"
-     *     }
-     *   },
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     403 = "Returned when the product is not authorized to say hello",
-     *     404 = {
-     *       "Returned when the product is not found",
-     *       "Returned when something else is not found"
-     *     }
-     *   }
+     *   requirements={},
+     *   statusCodes = {}
      * )
      * 
+     * @Annotations\View()
+     * 
      * @return array
-     * @View()
      */ 
-    public function deleteAction($id)
+    public function deletePageAction($id)
     {
         // Get a page from page service. 
         $page = $this->get('app.page.service')->getPage($id);
@@ -145,6 +93,12 @@ class PageController extends BaseController
         // Use deleteEntity function in app.service to delete this entity        
         $this->get('app.service')->deleteEntity($page);
         
-        return array('Page is deleted');
+        // There is a debate if this should be a 404 or a 204
+        // see http://leedavis81.github.io/is-a-http-delete-requests-idempotent/
+        return $this->routeRedirectView(
+            'get_pages', 
+            array(), 
+            Response::HTTP_NO_CONTENT
+            );
     }
 }

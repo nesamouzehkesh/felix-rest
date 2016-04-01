@@ -9,7 +9,7 @@ class BaseEntityRepository extends EntityRepository
     /**
      * Get BaseQueryBuilder, an extention of QueryBuilder
      * 
-     * @return \Library\Doctrine\BaseQueryBuilder
+     * @return AppBundle\Library\Base\BaseQueryBuilder
      */
     public function getQueryBuilder()
     {

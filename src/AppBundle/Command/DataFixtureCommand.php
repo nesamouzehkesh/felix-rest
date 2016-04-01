@@ -5,7 +5,6 @@ namespace AppBundle\Command;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Command to generate some predefined data in DB
@@ -14,6 +13,9 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  */
 class DataFixtureCommand extends ContainerAwareCommand
 {
+    /**
+     * Command configurations
+     */
     protected function configure()
     {
         $this
@@ -21,16 +23,14 @@ class DataFixtureCommand extends ContainerAwareCommand
             ->setDescription('Generate some sample data')
         ;
     }
-
+    
+    /**
+     * 
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $router = $this->getContainer()->get('router');
-        $dashboardUrl = $router->generate(
-            'admin_app_dashboard',
-            array(),
-            UrlGeneratorInterface::ABSOLUTE_URL
-            );
-        
         $output->writeln('<comment>Importing predefined data ...<comment>');
         $dataFixture = $this->getContainer()->get('app.dataFixture.service');
         $dataFixture
@@ -38,11 +38,9 @@ class DataFixtureCommand extends ContainerAwareCommand
             ->loadUserRoles()
             ->loadUsers()
             ->loadPages()
+            ->loadProducts()
             ;
         
-        $output->writeln(sprintf(
-            '<info>Data loaded successfully. Visit this page %s and login with "admin@admin.com" with password "admin"<info>', 
-            $dashboardUrl
-            ));
+        $output->writeln('<info>Data loaded successfully. Visit this page http://<domain>/api<info>');
     }
 }
