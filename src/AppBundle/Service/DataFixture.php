@@ -8,6 +8,8 @@ use UserBundle\Entity\Address;
 use UserBundle\Entity\User;
 use UserBundle\Entity\Role;
 use PageBundle\Entity\Page;
+use ProductBundle\Entity\Product;
+use ProductBundle\Entity\Category as ProductCategory;
 
 class DataFixture
 {
@@ -17,6 +19,8 @@ class DataFixture
             array('name' => 'User', 'role' => Role::ROLE_USER),
             array('name' => 'Admin', 'role' => Role::ROLE_ADMIN),
         ),
+        'productCategories' => 5,
+        'products' => 20,        
         'users' => 20,
         'usersData' => array(
             array(
@@ -102,7 +106,6 @@ class DataFixture
             $role->setName($roleData['name']);
             $role->setRole($roleData['role']);
             $this->roles[$roleData['role']] = $role;
-            
             $this->appService->getEntityManager()->persist($role);
         }
         $this->appService->getEntityManager()->flush();
@@ -157,7 +160,6 @@ class DataFixture
                     $address->setType(Address::TYPE_PRIMARY);
                     $address->setUser($user);
                     $user->addAddress($address);
-                        
                     $this->appService->getEntityManager()->persist($address);
                 }
             }
@@ -169,7 +171,9 @@ class DataFixture
     }
     
     /**
+     * Load pages
      * 
+     * @return \AppBundle\Service\DataFixture
      */
     public function loadPages()
     {
@@ -192,8 +196,44 @@ class DataFixture
             */
             $this->appService->getEntityManager()->persist($page);
         }
-        
         $this->appService->getEntityManager()->flush();
+        
+        return $this;
+    }
+    
+    /**
+     * Load products
+     * 
+     * @return \AppBundle\Service\DataFixture
+     */
+    public function loadProducts()
+    {
+        $productCategories = array();
+        $loremIpsum = new LoremIpsumGenerator();
+        for ($i = 0; $i < $this->data['productCategories']; $i++) {
+            $productCategory = new ProductCategory();
+            $productCategory->setTitle($loremIpsum->getTitle());
+            $productCategory->setDescription($loremIpsum->getDescription());
+            $productCategories[$i] = $productCategory;
+            $this->appService->getEntityManager()->persist($productCategory);
+        }
+        
+        for ($i = 0; $i < $this->data['products']; $i++) {
+            $product = new Product();
+            $product->setTitle($loremIpsum->getTitle());
+            $product->setDescription($loremIpsum->getDescription());
+            $product->setPrice(1);
+            $product->setOriginalPrice(1.99);
+            shuffle($productCategories);
+            for ($j = 0; $j < rand(1 , 3); $j++) {
+                $productCategory = $productCategories[$j];
+                $product->addCategory($productCategory);
+            }
+            $this->appService->getEntityManager()->persist($product);
+        }
+        $this->appService->getEntityManager()->flush();
+        
+        return $this;
     }    
     
     /**

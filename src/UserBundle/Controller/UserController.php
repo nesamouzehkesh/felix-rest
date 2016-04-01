@@ -9,7 +9,7 @@ use AppBundle\Library\Base\BaseController;
 use UserBundle\Entity\User;
 use UserBundle\Form\UserType;
 
-class UserAdminController extends BaseController
+class UserController extends BaseController
 {
     /**
      * Display all users in the user main page

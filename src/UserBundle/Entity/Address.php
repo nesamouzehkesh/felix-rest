@@ -8,7 +8,7 @@ use AppBundle\Library\Base\BaseEntity;
 /**
  * Acme\UserBundle\Entity\User
  *
- * @ORM\Table(name="nesa_user_address")
+ * @ORM\Table(name="felix_user_address")
  * @ORM\Entity(repositoryClass="UserBundle\Entity\Repository\AddressRepository")
  */
 class Address extends BaseEntity

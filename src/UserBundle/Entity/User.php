@@ -11,7 +11,7 @@ use AppBundle\Library\Base\BaseEntity;
 /**
  * UserBundle\Entity\User
  *
- * @ORM\Table(name="nesa_user")
+ * @ORM\Table(name="felix_user")
  * @ORM\Entity(repositoryClass="UserBundle\Entity\Repository\UserRepository")
  */
 class User extends BaseEntity implements AdvancedUserInterface, \Serializable
@@ -63,7 +63,7 @@ class User extends BaseEntity implements AdvancedUserInterface, \Serializable
     
     /**
      * @ORM\ManyToMany(targetEntity="Role", inversedBy="users")
-     * @ORM\JoinTable(name="nesa_users_roles")
+     * @ORM\JoinTable(name="felix_user_users_roles")
      */
     private $roles;
     

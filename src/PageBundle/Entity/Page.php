@@ -8,7 +8,7 @@ use AppBundle\Library\Base\BaseEntity;
 /**
  * Page
  *
- * @ORM\Table(name="nesa_page")
+ * @ORM\Table(name="felix_page")
  * @ORM\Entity(repositoryClass="PageBundle\Entity\Repository\PageRepository")
  */
 class Page extends BaseEntity
