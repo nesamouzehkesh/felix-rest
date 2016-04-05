@@ -40,10 +40,7 @@ class ProductController extends BaseController
             ->getRepository('ProductBundle:Product')
             ->getProducts();
         
-        return array(
-            'products' => $products,
-            'total' => count($products),
-            );
+        return $products;
     }
     
     /**
