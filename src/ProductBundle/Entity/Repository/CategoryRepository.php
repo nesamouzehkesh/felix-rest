@@ -31,8 +31,9 @@ class CategoryRepository extends BaseEntityRepository
             $qb->leftJoin('c.products', 'p', 'p.deleted = 0');
         }
         
-        return $qb->getQuery()->getResult();        
+        return $qb->getQuery()->getScalarResult();        
     }
+    
     
     /**
      * 
@@ -50,6 +51,7 @@ class CategoryRepository extends BaseEntityRepository
 
         return intval($qb->getQuery()->getSingleScalarResult());
     }
+    
     
     /**
      * Get one or null category

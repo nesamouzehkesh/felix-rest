@@ -11,4 +11,9 @@ page:
 app:
     resource: AppBundle\Controller\AppController
     type:     rest
-    prefix:   /api/app    
+    prefix:   /api/app 
+    
+category:
+    resource: ProductBundle\Controller\ProductController
+    type:     rest
+    prefix:   /api/product-category
