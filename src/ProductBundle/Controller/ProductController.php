@@ -43,16 +43,7 @@ class ProductController extends BaseController
         return $products;
     }
     
-    public function getCategoriesAction()
-    {
-        $categories = $this
-            ->getDoctrine()
-            ->getEntityManager()
-            ->getRepository('ProductBundle:Category')
-            ->getCategories();
-        
-        return $categories;
-    }
+   
     
     /**
      * @ApiDoc(
