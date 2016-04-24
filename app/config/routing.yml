@@ -17,3 +17,9 @@ category:
     resource: ProductBundle\Controller\CategoryController
     type:     rest
     prefix:   /api/product-category
+    
+order:
+    resource: ProductBundle\Controller\OrderController
+    type:     rest
+    prefix:   /api/product-order
+    

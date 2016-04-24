@@ -97,7 +97,7 @@ class ProductController extends BaseController
      * )
      * @Annotations\View()
      * 
-     * @param int $id
+     * @Annotations\QueryParam(name="id", requirements="\d+", nullable=true, description="Product ID")
      * @return array
      */ 
     public function deleteProductAction($id)

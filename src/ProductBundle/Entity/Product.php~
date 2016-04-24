@@ -77,10 +77,10 @@ class Product extends BaseEntity
     protected $categories; 
     
      /**
-     * @ORM\ManyToMany(targetEntity="Order", inversedBy="products")
-     * @ORM\JoinTable(name="felix_product_products_orders")
+     * @ORM\ManyToMany(targetEntity="ProductOrder", inversedBy="products")
+     * @ORM\JoinTable(name="products_productOrders")
      */
-    private $orders;
+    private $productOrders;
     
     /**
      * 
@@ -89,7 +89,6 @@ class Product extends BaseEntity
     {
         parent::__construct();
         $this->categories = new ArrayCollection();
-        $this->orders = new ArrayCollection();
         $this->setAvailable(true);
     }
 
@@ -295,63 +294,5 @@ class Product extends BaseEntity
     public function getCategories()
     {
         return $this->categories;
-    }
-
-    /**
-     * Set createdTime
-     *
-     * @param integer $createdTime
-     *
-     * @return Product
-     */
-    public function setCreatedTime($createdTime)
-    {
-        $this->createdTime = $createdTime;
-
-        return $this;
-    }
-
-    /**
-     * Get createdTime
-     *
-     * @return integer
-     */
-    public function getCreatedTime()
-    {
-        return $this->createdTime;
-    }
-
-    /**
-     * Add order
-     *
-     * @param \ProductBundle\Entity\ProductOrder $order
-     *
-     * @return Product
-     */
-    public function addOrder(\ProductBundle\Entity\ProductOrder $order)
-    {
-        $this->orders[] = $order;
-
-        return $this;
-    }
-
-    /**
-     * Remove order
-     *
-     * @param \ProductBundle\Entity\ProductOrder $order
-     */
-    public function removeOrder(\ProductBundle\Entity\ProductOrder $order)
-    {
-        $this->orders->removeElement($order);
-    }
-
-    /**
-     * Get orders
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getOrders()
-    {
-        return $this->orders;
     }
 }
