@@ -4,6 +4,7 @@ namespace ProductBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use AppBundle\Library\Base\BaseEntity;
 
 /**
  * Order
@@ -11,7 +12,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @ORM\Table(name="felix_product_order")
  * @ORM\Entity(repositoryClass="ProductBundle\Repository\OrderRepository")
  */
-class Order
+class Order extends BaseEntity
 {
     /**
      * @var int
@@ -71,11 +72,10 @@ class Order
      */
     private $giftwrap;
     
-    // ...
     /**
-     * @ORM\ManyToMany(targetEntity="Product", mappedBy="orders")
+     * @ORM\OneToMany(targetEntity="OrderDetail", mappedBy="order")
      */
-    private $products;
+    private $orderDetail;
     
     /**
      * 
@@ -83,7 +83,7 @@ class Order
     public function __construct()
     {
         parent::__construct();
-        $this->products = new ArrayCollection();
+        $this->orderDetail = new ArrayCollection();
     }
     
     /**
@@ -265,36 +265,36 @@ class Order
     }
 
     /**
-     * Add product
+     * Add orderDetail
      *
-     * @param \ProductBundle\Entity\Producr $product
+     * @param \ProductBundle\Entity\OrderDetail $orderDetail
      *
-     * @return ProductOrder
+     * @return Order
      */
-    public function addProduct(\ProductBundle\Entity\Producr $product)
+    public function addOrderDetail(\ProductBundle\Entity\OrderDetail $orderDetail)
     {
-        $this->products[] = $product;
+        $this->orderDetail[] = $orderDetail;
 
         return $this;
     }
 
     /**
-     * Remove product
+     * Remove orderDetail
      *
-     * @param \ProductBundle\Entity\Producr $product
+     * @param \ProductBundle\Entity\OrderDetail $orderDetail
      */
-    public function removeProduct(\ProductBundle\Entity\Producr $product)
+    public function removeOrderDetail(\ProductBundle\Entity\OrderDetail $orderDetail)
     {
-        $this->products->removeElement($product);
+        $this->orderDetail->removeElement($orderDetail);
     }
 
     /**
-     * Get products
+     * Get orderDetail
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getProducts()
+    public function getOrderDetail()
     {
-        return $this->products;
+        return $this->orderDetail;
     }
 }

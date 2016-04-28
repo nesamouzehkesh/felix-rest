@@ -9,6 +9,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Library\Base\BaseController;
 use ProductBundle\Entity\Order;
+use ProductBundle\Entity\OrderDetail;
 
 /**
  * Getting Started With FOSRestBundle 
@@ -40,25 +41,38 @@ class OrderController extends BaseController
      */
     public function postOrderAction(Request $request)
     {
+        $em = $this->getDoctrine()->getManager();
+        /* ini ke backend daryaft karde object nist etelaate order 
+         * hast ina bayad convert konim be order */
         $data = $request->request->get('order');
+                
         $order = new Order();
         $order->setName($data['name']);
         $order->setStreet($data['street']);
         $order->setCity($data['city']);
+        $order->setState($data['state']);
+        $order->setCountry($data['country']);
         $order->setZip($data['zip']);
         $order->setCountry($data['country']);
-        $order->setGiftWrap($data['giftWrap']);
+        $order->setGiftWrap($data['giftwrap']);
+        $em->persist($order);
         
         foreach ($data['products'] as $productData) {
             $product = $this->getDoctrine()
-            ->getManager()
-            ->getReference('ProductBundle:Product', $productData['id']);
-            $order->addProduct($product);
-}
+                ->getManager()
+                ->getReference('ProductBundle:Product', $productData['id']);
+            
+            $orderDetail = new OrderDetail();
+            $orderDetail->setCount($productData['count']);
+            $orderDetail->setOrder($order);
+            $orderDetail->setProduct($product);
 
-        $em->persist($order);
-        $em->flush();
-        
+            $order->addOrderDetail($orderDetail);
+            
+            $em->persist($orderDetail);
+            $em->flush();
         }
-} /* ini ke backend mideee object nist etelaate order hast
-ina bayad convert koni be order */
+        
+        return array();
+    }
+}
