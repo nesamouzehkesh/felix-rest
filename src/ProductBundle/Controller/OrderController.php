@@ -5,8 +5,6 @@ namespace ProductBundle\Controller;
 use FOS\RestBundle\Controller\Annotations;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Library\Base\BaseController;
 use ProductBundle\Entity\Order;
 use ProductBundle\Entity\OrderDetail;
@@ -42,10 +40,10 @@ class OrderController extends BaseController
     public function postOrderAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        /* ini ke backend daryaft karde object nist etelaate order 
-         * hast ina bayad convert konim be order */
+        // Get front end data
         $data = $request->request->get('order');
-                
+        
+        // Create a new Order object
         $order = new Order();
         $order->setName($data['name']);
         $order->setStreet($data['street']);
@@ -55,23 +53,29 @@ class OrderController extends BaseController
         $order->setZip($data['zip']);
         $order->setCountry($data['country']);
         $order->setGiftWrap($data['giftwrap']);
+        // Persist $order
         $em->persist($order);
         
         foreach ($data['products'] as $productData) {
+            // Get a refrence to product entity. Note: that $product is not a 
+            // Product object
             $product = $this->getDoctrine()
                 ->getManager()
                 ->getReference('ProductBundle:Product', $productData['id']);
             
+            // Create a new OrderDetail object
             $orderDetail = new OrderDetail();
             $orderDetail->setCount($productData['count']);
             $orderDetail->setOrder($order);
             $orderDetail->setProduct($product);
-
+            
+            // Add this $orderDetail to $order
             $order->addOrderDetail($orderDetail);
             
+            // Persist $orderDetail
             $em->persist($orderDetail);
-            $em->flush();
         }
+        $em->flush();
         
         return array();
     }
