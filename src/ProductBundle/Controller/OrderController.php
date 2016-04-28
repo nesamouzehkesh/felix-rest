@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Library\Base\BaseController;
+use ProductBundle\Entity\Order;
 
 /**
  * Getting Started With FOSRestBundle 
@@ -39,8 +40,25 @@ class OrderController extends BaseController
      */
     public function postOrderAction(Request $request)
     {
-        $order = $request->request->get('order');
+        $data = $request->request->get('order');
+        $order = new Order();
+        $order->setName($data['name']);
+        $order->setStreet($data['street']);
+        $order->setCity($data['city']);
+        $order->setZip($data['zip']);
+        $order->setCountry($data['country']);
+        $order->setGiftWrap($data['giftWrap']);
         
-        return array();
-    }
+        foreach ($data['products'] as $productData) {
+            $product = $this->getDoctrine()
+            ->getManager()
+            ->getReference('ProductBundle:Product', $productData['id']);
+            $order->addProduct($product);
 }
+
+        $em->persist($order);
+        $em->flush();
+        
+        }
+} /* ini ke backend mideee object nist etelaate order hast
+ina bayad convert koni be order */
