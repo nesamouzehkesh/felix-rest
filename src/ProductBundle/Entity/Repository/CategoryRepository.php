@@ -22,7 +22,7 @@ class CategoryRepository extends BaseEntityRepository
     public function getCategories($loadProducts = false, $order = 'c.id')
     {
         $qb = $this->getQueryBuilder()
-            ->select('c')
+            ->select('c.id, c.description, c.title') //gives control on how your api is shown to the client
             ->from('ProductBundle:Category', 'c')
             ->where('c.deleted = 0')
             ->orderBy($order);
@@ -31,8 +31,9 @@ class CategoryRepository extends BaseEntityRepository
             $qb->leftJoin('c.products', 'p', 'p.deleted = 0');
         }
         
-        return $qb->getQuery()->getResult();        
+        return $qb->getQuery()->getScalarResult();        
     }
+    
     
     /**
      * 
@@ -50,6 +51,7 @@ class CategoryRepository extends BaseEntityRepository
 
         return intval($qb->getQuery()->getSingleScalarResult());
     }
+    
     
     /**
      * Get one or null category

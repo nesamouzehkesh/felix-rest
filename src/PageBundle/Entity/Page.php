@@ -43,7 +43,6 @@ class Page extends BaseEntity
      */
     private $content;
 
-
     /**
      * Get id
      *
