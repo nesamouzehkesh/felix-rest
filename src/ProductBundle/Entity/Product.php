@@ -74,7 +74,7 @@ class Product extends BaseEntity
      * joinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")},
      * inverseJoinColumns={@ORM\JoinColumn(name="category_id", referencedColumnName="id")})
      */
-    protected $categories;    
+    protected $categories; 
     
     /**
      * 
@@ -288,5 +288,29 @@ class Product extends BaseEntity
     public function getCategories()
     {
         return $this->categories;
+    }
+
+    /**
+     * Set createdTime
+     *
+     * @param integer $createdTime
+     *
+     * @return Product
+     */
+    public function setCreatedTime($createdTime)
+    {
+        $this->createdTime = $createdTime;
+
+        return $this;
+    }
+
+    /**
+     * Get createdTime
+     *
+     * @return integer
+     */
+    public function getCreatedTime()
+    {
+        return $this->createdTime;
     }
 }

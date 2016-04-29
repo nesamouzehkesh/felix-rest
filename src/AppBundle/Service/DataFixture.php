@@ -19,9 +19,9 @@ class DataFixture
             array('name' => 'User', 'role' => Role::ROLE_USER),
             array('name' => 'Admin', 'role' => Role::ROLE_ADMIN),
         ),
-        'productCategories' => 5,
-        'products' => 20,        
-        'users' => 20,
+        'productCategories' => 20,
+        'products' => 100,        
+        'users' => 50,
         'usersData' => array(
             array(
                 'username' => 'admin@admin.com',
