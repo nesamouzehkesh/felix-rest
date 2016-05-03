@@ -52,7 +52,8 @@ class OrderController extends BaseController
         $order->setCountry($data['country']);
         $order->setZip($data['zip']);
         $order->setCountry($data['country']);
-        $order->setGiftWrap($data['giftwrap']);
+        $order->setGiftWrap(isset($data['giftwrap'])? $data['giftwrap'] : false);
+        
         // Persist $order
         $em->persist($order);
         
@@ -63,11 +64,15 @@ class OrderController extends BaseController
                 ->getManager()
                 ->getReference('ProductBundle:Product', $productData['id']);
             
-            // Create a new OrderDetail object
+            // Create a new OrderDetail object (OrderDetail table is the same as 
+            //Products-Orders table in the database but we have created it by 
+            //ourselves not letting Doctrine to create it for us during the 
+            //many-to-many bidirectional table creation. 
             $orderDetail = new OrderDetail();
             $orderDetail->setCount($productData['count']);
             $orderDetail->setOrder($order);
             $orderDetail->setProduct($product);
+            $orderDetail->setPrice($product->getPrice());
             
             // Add this $orderDetail to $order
             $order->addOrderDetail($orderDetail);
@@ -75,8 +80,47 @@ class OrderController extends BaseController
             // Persist $orderDetail
             $em->persist($orderDetail);
         }
+        ///$order->getId(); // null
         $em->flush();
         
-        return array();
+        //You can expose whatever you want to your frontend here, such as orderId in this case
+        return array(
+            'id' => $order->getId()
+            );
+    }
+    
+    
+    
+     /**
+     * Get all orders
+     * Route name "get_orders" [GET] /orders
+     * 
+     * @ApiDoc(
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     403 = "Returned when the product is not authorized to say hello",
+     *     404 = {
+     *       "Returned when the product is not found",
+     *       "Returned when something else is not found"
+     *     }
+     *   }
+     * )
+     * 
+     * @Annotations\View()
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing entities.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many entities to return.")
+     * 
+     * @return array
+     */
+    public function getOrdersAction()
+    {
+        $orders = $this
+            ->getDoctrine()
+            ->getEntityManager()
+            ->getRepository('ProductBundle:Order')
+            ->getAllOrders();
+        
+        return $orders;
     }
 }

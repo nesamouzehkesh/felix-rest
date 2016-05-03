@@ -16,22 +16,40 @@ class OrderRepository extends BaseEntityRepository
      * 
      * @return type
      */
-    public function getAllOrders($order = 'product.id')
+    public function getAllOrders()
     {
         $qb = $this->getQueryBuilder()
-            ->select(''
-                . 'order.id, '
-                . 'order.name, '
-                . 'order.street, '
-                . 'order.city, '
-                . 'order.state, '
-                . 'order.zip, '
-                . 'order.country, '
-                . 'order.giftwrap '
-                )
-            ->from('ProductBundle:order', 'order')
-            ->orderBy($order);
+            ->select('theOrder')
+            ->from('ProductBundle:Order', 'theOrder');
         
-        return $qb->getQuery()->getScalarResult();
+        $orders = $qb->getQuery()->getResult();
+
+        $orderData = array();
+        foreach ($orders as $order) {
+            $orderDetails = array();
+            foreach ($order->getOrderDetail() as $orderDetail) {
+                $orderDetails[] = array(
+                    'product' => $orderDetail->getProduct()->getTitle(),
+                    'count' => $orderDetail->getCount(),
+                    'price' => $orderDetail->getPrice(),
+                );
+            }
+            
+            $orderData[] = array(
+                'id' => $order->getId(),
+                'name' => $order->getName(),
+                'detail' => $orderDetails
+            ); 
+        }
+
+
+//                . 'order.street, '
+//                . 'order.city, '
+//                . 'order.state, '
+//                . 'order.zip, '
+//                . 'order.country, '
+//                . 'order.giftwrap '        
+        
+        return $orderData;
     }
 }

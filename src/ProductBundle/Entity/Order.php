@@ -10,7 +10,7 @@ use AppBundle\Library\Base\BaseEntity;
  * Order
  *
  * @ORM\Table(name="felix_product_order")
- * @ORM\Entity(repositoryClass="ProductBundle\Repository\OrderRepository")
+ * @ORM\Entity(repositoryClass="ProductBundle\Entity\Repository\OrderRepository")
  */
 class Order extends BaseEntity
 {

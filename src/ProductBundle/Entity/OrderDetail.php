@@ -9,7 +9,7 @@ use AppBundle\Library\Base\BaseEntity;
  * ProductOrder
  *
  * @ORM\Table(name="felix_product_order_detail")
- * @ORM\Entity(repositoryClass="ProductBundle\Repository\OrderDetailsRepository")
+ * @ORM\Entity(repositoryClass="ProductBundle\Entity\Repository\OrderDetailsRepository")
  */
 class OrderDetail extends BaseEntity
 {
@@ -38,6 +38,13 @@ class OrderDetail extends BaseEntity
      * @ORM\Column(name="count", type="integer", nullable=true)
      */
     protected $count;    
+    
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="price", type="float", nullable=true)
+     */
+    private $price;
     
     /**
      * Get id
@@ -120,4 +127,27 @@ class OrderDetail extends BaseEntity
     {
         return $this->order;
     }
+    
+    /**
+     * Set price
+     *
+     * @param integer $price
+     * @return Product
+     */
+    public function setPrice($price)
+    {
+        $this->price = $price;
+
+        return $this;
+    }
+
+    /**
+     * Get price
+     *
+     * @return integer 
+     */
+    public function getPrice()
+    {
+        return $this->price;
+    }    
 }
